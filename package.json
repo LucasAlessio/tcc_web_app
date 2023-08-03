@@ -1,0 +1,46 @@
+{
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build"
+	},
+	"devDependencies": {
+		"@inertiajs/react": "^1.0.0",
+		"@tailwindcss/forms": "^0.5.3",
+		"@types/node": "^18.13.0",
+		"@types/react": "^18.0.28",
+		"@types/react-dom": "^18.0.10",
+		"@types/ziggy-js": "^1.3.2",
+		"@vitejs/plugin-react": "^3.0.0",
+		"autoprefixer": "^10.4.12",
+		"axios": "^1.1.2",
+		"laravel-vite-plugin": "^0.7.5",
+		"postcss": "^8.4.18",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"typescript": "^5.0.2",
+		"vite": "^4.0.0"
+	},
+	"dependencies": {
+		"@chakra-ui/icons": "^2.0.19",
+		"@chakra-ui/react": "^2.7.1",
+		"@chakra-ui/system": "^2.5.8",
+		"@chakra-ui/theme-tools": "^2.0.18",
+		"@emotion/cache": "^11.7.1",
+		"@emotion/react": "^11.4.1",
+		"@emotion/styled": "^11.3.0",
+		"@headlessui/react": "^1.7.15",
+		"@hookform/error-message": "^2.0.1",
+		"@hookform/resolvers": "^3.1.1",
+		"@types/react-router-dom": "5.3.0",
+		"framer-motion": "^10.12.21",
+		"react-custom-scrollbars-2": "^4.5.0",
+		"react-hook-form": "^7.45.1",
+		"react-icons": "^4.10.1",
+		"react-query": "^3.39.3",
+		"react-router-dom": "^6.14.1",
+		"tailwindcss": "^3.3.3",
+		"yup": "^1.2.0"
+	}
+}
