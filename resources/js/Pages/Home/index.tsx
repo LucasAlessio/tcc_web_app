@@ -8,7 +8,7 @@ export const Home = () => {
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
 
 	return (
-		<Page title="Início">
+		<Page title="Início" startPath="/">
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap='20px' mb='20px'>
 				<Card>
 					<Text as='h2' me='auto' color={textColor} fontSize='xl' fontWeight='700' lineHeight='100%' mb="12px">

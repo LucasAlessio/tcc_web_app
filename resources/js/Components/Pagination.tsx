@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Flex, IconButton, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text, Tooltip } from "@chakra-ui/react";
+import { Flex, IconButton, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text, Tooltip, useMediaQuery } from "@chakra-ui/react";
 import { ChangeEvent } from "react";
 
 type PaginationProps = {
@@ -11,6 +11,8 @@ type PaginationProps = {
 }
 
 export const Pagination = ({ page, total, size, setPage, setPageSize }: PaginationProps) => {
+	const [isLargerThan640px] = useMediaQuery('(min-width: 640px)');
+
 	const lastPage = Math.ceil(total / size);
 
 	const disabledPrevs = page <= 1;
@@ -50,7 +52,7 @@ export const Pagination = ({ page, total, size, setPage, setPageSize }: Paginati
 			</Flex>
 
 			<Flex alignItems="center">
-				<Text flexShrink="0" mr={4}>
+				<Text flexShrink="0" mr={isLargerThan640px ? 4 : 0}>
 					Página
 					{" "}
 					<Text fontWeight="bold" as="span">{page}</Text>
@@ -59,49 +61,54 @@ export const Pagination = ({ page, total, size, setPage, setPageSize }: Paginati
 					{" "}
 					<Text fontWeight="bold" as="span">{Math.ceil(total / size)}</Text>
 				</Text>
-				<Text flexShrink="0">Ir para página:</Text>{" "}
-				<NumberInput
-					variant="main"
-					ml={2}
-					mr={4}
-					w={20}
-					min={1}
-					max={lastPage}
-					defaultValue={page}
-					size="sm"
-					onChange={(value) => {
-						const page = Number(value);
 
-						if (page < 1) {
-							setPage(1);
-							return;
-						}
+				{isLargerThan640px && (
+					<>
+						<Text flexShrink="0">Ir para página:</Text>{" "}
+						<NumberInput
+							variant="main"
+							ml={2}
+							mr={4}
+							w={20}
+							min={1}
+							max={lastPage}
+							defaultValue={page}
+							size="sm"
+							onChange={(value) => {
+								const page = Number(value);
 
-						if (page > lastPage) {
-							setPage(lastPage);
-							return;
-						}
+								if (page < 1) {
+									setPage(1);
+									return;
+								}
 
-						setPage(page);
-					}}>
-					<NumberInputField />
-					<NumberInputStepper>
-						<NumberIncrementStepper />
-						<NumberDecrementStepper />
-					</NumberInputStepper>
-				</NumberInput>
-				<Select
-					variant="main"
-					w={28}
-					value={size}
-					size="sm"
-					onChange={handleChanePageSize}>
-					{[10, 25, 50].map((pageSize) => (
-						<option key={pageSize} value={pageSize}>
-							Exibir {pageSize}
-						</option>
-					))}
-				</Select>
+								if (page > lastPage) {
+									setPage(lastPage);
+									return;
+								}
+
+								setPage(page);
+							}}>
+							<NumberInputField />
+							<NumberInputStepper>
+								<NumberIncrementStepper />
+								<NumberDecrementStepper />
+							</NumberInputStepper>
+						</NumberInput>
+						<Select
+							variant="main"
+							w={28}
+							value={size}
+							size="sm"
+							onChange={handleChanePageSize}>
+							{[10, 25, 50].map((pageSize) => (
+								<option key={pageSize} value={pageSize}>
+									Exibir {pageSize}
+								</option>
+							))}
+						</Select>
+					</>
+				)}
 			</Flex>
 
 			<Flex>
@@ -112,7 +119,7 @@ export const Pagination = ({ page, total, size, setPage, setPageSize }: Paginati
 						icon={<ChevronRightIcon h={6} w={6} />}
 						aria-label="Próxima página"
 						size="sm"
-						ml={4} />
+						ml={2} />
 				</Tooltip>
 				<Tooltip label="Última página" hasArrow placement="top">
 					<IconButton
@@ -121,7 +128,7 @@ export const Pagination = ({ page, total, size, setPage, setPageSize }: Paginati
 						icon={<ArrowRightIcon h={3} w={3} />}
 						aria-label="Última página"
 						size="sm"
-						ml={4} />
+						ml={2} />
 				</Tooltip>
 			</Flex>
 		</Flex>

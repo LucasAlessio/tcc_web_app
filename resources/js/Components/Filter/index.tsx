@@ -3,7 +3,7 @@ import { DeepPartial, FieldErrors, FieldValues, UseFormProps, UseFormReturn, Use
 
 type FilterFormatDefault = FieldValues;
 
-type TContextFilters<T extends FilterFormatDefault = FilterFormatDefault> = {
+export type TContextFilters<T extends FilterFormatDefault = FilterFormatDefault> = {
 	filters: T,
 	applyFilters: (onError?: (errors: FieldErrors<T>) => void) => void,
 	form: Omit<UseFormReturn<T>, "setValue" | "reset"> & {
@@ -12,10 +12,11 @@ type TContextFilters<T extends FilterFormatDefault = FilterFormatDefault> = {
 	resetFilters: () => void,
 }
 
-type FilterProviderProps<T extends FilterFormatDefault> = PropsWithChildren<{
+type FilterProviderProps<T extends FilterFormatDefault> = {
+	children?: React.ReactNode | ((context: TContextFilters<T>) => React.ReactNode) | undefined;
 	defaultValues: T,
 	formOptions?: UseFormProps<T>,
-}>
+}
 
 const ContextFilters = createContext<TContextFilters>({} as TContextFilters);
 
@@ -55,18 +56,20 @@ export function FiltersProvider<T extends FilterFormatDefault = FilterFormatDefa
 
 	const { reset, setValue: _, ..._form } = form;
 
+	const value = {
+		filters,
+		applyFilters,
+		resetFilters,
+		form: {
+			..._form,
+			setValue
+		},
+	};
+
 	return (
-		<ContextFilters.Provider value={{
-			filters,
-			applyFilters,
-			resetFilters,
-			form: {
-				..._form,
-				//@ts-ignore
-				setValue
-			},
-		}}>
-			{children}
+		//@ts-ignore
+		<ContextFilters.Provider value={value}>
+			{typeof children === "function" ? children(value) : children}
 		</ContextFilters.Provider>
 	);
 }

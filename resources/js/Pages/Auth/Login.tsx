@@ -1,4 +1,3 @@
-import { OverlayLoader } from "@/Components/OverlayLoader";
 import { Label } from "@/Components/Label";
 import { TextInput } from "@/Components/TextInput";
 import { useAuth2 } from "@/Contexts/Auth2";
@@ -8,7 +7,8 @@ import { isValidationException } from "@/types/utils";
 import {
 	Alert, AlertIcon, Box, Button, Checkbox, Flex, FormControl,
 	FormLabel, Heading, Icon, Image, InputGroup,
-	InputRightElement, Text, useColorModeValue
+	InputRightElement, Text,
+	useColorModeValue
 } from "@chakra-ui/react";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
@@ -16,8 +16,12 @@ import { FormProvider, Path, useForm } from "react-hook-form";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { NavLink, Navigate, useNavigate } from "react-router-dom";
-import { LoaderPage } from "../Loading";
+import Logo from '../../../img/display/logo.png';
+import NegativeLogo from '../../../img/display/logo_negative.png';
+import ClinicalCenterLogo from '../../../img/display/logo_clinical_center.png';
+import NegativeClinicalCenterLogo from '../../../img/display/logo_negative_clinical_center.png';
 import { HelpBlockError } from "../../Components/HelpBlockError";
+import { LoaderPage } from "../Loading";
 
 export type TForm = {
 	email: string,
@@ -31,15 +35,17 @@ export const Login = () => {
 	const textColor = useColorModeValue("navy.700", "white");
 	const textColorBrand = useColorModeValue("brand.500", "white");
 	const brandStars = useColorModeValue("brand.500", "brand.400");
+	const appLogo = useColorModeValue(Logo, NegativeLogo);
+	const clinicalCenterLogo = useColorModeValue(ClinicalCenterLogo, NegativeClinicalCenterLogo);
 
 	const [show, setShow] = useState(false);
-	const handleClick = () => setShow(!show);
 
 	const form = useForm<TForm>();
 	const { register, formState: { errors }, handleSubmit, setError } = form;
-
 	const navigate = useNavigate();
+
 	const { alert } = useModals();
+	const handleClick = () => setShow(!show);
 
 	const handleLogin = handleSubmit(formData => {
 		login(formData, {
@@ -100,8 +106,8 @@ export const Login = () => {
 							justifyContent="space-evenly"
 							alignItems="center"
 							direction={{ base: "column", sm: "row" }}>
-							<Image src="https://www.ucs.br/site/static/img/capa2016/logo_ucs.png" title="Universidade de Caxias do Sul" height="65px" />
-							<Image src="https://centroclinico.ucs.br/site/midia/arquivos/Centro-Clinico_logo.png" title="Centro Clínico - UCS" height="65px" />
+							<Image src={appLogo} title="Universidade de Caxias do Sul" height="65px" />
+							<Image src={clinicalCenterLogo} title="Centro Clínico - UCS" height="65px" />
 						</Flex>
 
 						<Box me='auto'>

@@ -80,6 +80,9 @@ export const globalStyles = {
 	},
 	styles: {
 		global: (props: any) => ({
+			html: {
+				fontFamily: 'DM Sans'
+			},
 			body: {
 				overflowX: 'hidden',
 				bg: mode('secondaryGray.300', 'navy.900')(props),
@@ -88,9 +91,6 @@ export const globalStyles = {
 			},
 			input: {
 				color: 'gray.700'
-			},
-			html: {
-				fontFamily: 'DM Sans'
 			}
 		})
 	}

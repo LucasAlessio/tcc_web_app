@@ -44,6 +44,7 @@ export const TextInput = forwardRef<InputProps, 'input'>(({ children, ...props }
 			fontWeight='500'
 			size='md'
 			py="0"
+			autoComplete="off"
 			{...props} />
 	)
 });

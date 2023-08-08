@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PsychologistsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,23 +20,23 @@ use Inertia\Inertia;
 
 // Route::view('/{path?}', 'app')->where('path', '.*');
 
-Route::group(['prefix' => 'get'], function() {
-	Route::get('/identity', [AuthenticatedSessionController::class, 'index'])->name('profile');
-	
-	Route::group(['middleware' => 'auth'], function() {
-		// Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-	});
-});
-
 Route::group(['middleware' => 'auth'], function() {
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 	Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+	Route::post('/psychologists', [PsychologistsController::class, 'store'])->name('psychologists.store');
+	Route::put('/psychologists/{id}', [PsychologistsController::class, 'update'])->name('psychologists.update');
+	Route::delete('/psychologists/{id}', [PsychologistsController::class, 'destroy'])->name('psychologists.destroy');
+
+	Route::group(['prefix' => 'get'], function() {
+		Route::get('/identity', [AuthenticatedSessionController::class, 'index'])->name('profile');
+		Route::get('/psychologists', [PsychologistsController::class, 'index'])->name('psychologists.index');
+		Route::get('/psychologists/{id}', [PsychologistsController::class, 'edit'])->name('psychologists.edit');
+	});
 });
 
 Route::get('/{path?}', function () {
 	return Inertia::render('app', [
-		// 'canLogin' => Route::has('login'),
-		// 'canRegister' => Route::has('register'),
 		'laravelVersion' => Application::VERSION,
 		'phpVersion' => PHP_VERSION,
 	]);

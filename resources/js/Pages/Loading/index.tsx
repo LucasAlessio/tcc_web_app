@@ -1,7 +1,10 @@
-import { Flex, Image, Progress, Spinner, useColorModeValue } from "@chakra-ui/react";
+import { Flex, Image, Progress, useColorModeValue } from "@chakra-ui/react";
 import { Head } from "@inertiajs/react";
+import Logo from '../../../img/display/logo.png';
+import NegativeLogo from '../../../img/display/logo_negative.png';
 
 export const LoaderPage = () => {
+	const appLogo = useColorModeValue(Logo, NegativeLogo);
 	const bgColor = useColorModeValue("secondaryGray.300", "navy.900");
 
 	return (
@@ -16,7 +19,7 @@ export const LoaderPage = () => {
 			backgroundColor={bgColor}>
 			<Head title="Carregando..." />
 
-			<Image src="https://www.ucs.br/site/midia/arquivos/logoUCS2_8.png" title="Universidade de Caxias do Sul" height="95px" mb="40px" />
+			<Image src={appLogo} title="Universidade de Caxias do Sul" height="95px" mb="40px" />
 			<Progress size='xs' isIndeterminate w="100px" />
 		</Flex>
 	);

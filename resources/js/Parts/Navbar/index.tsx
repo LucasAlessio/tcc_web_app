@@ -1,15 +1,21 @@
 import { HeaderLinks } from '@/Parts/Navbar/NavbarLinks';
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Flex, Icon, Link, useColorModeValue } from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, Heading, Icon, useColorModeValue } from '@chakra-ui/react';
 import { MdHome } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Navbar = (props: {
 	secondary: boolean;
 	title: string;
+	startPath: `/${string}`,
+	urlBack?: `/${string}`,
+	breadCrumb?: Record<`/${string}`, string>
 	onOpen: (...args: any[]) => any;
 }) => {
-	const { secondary, title } = props;
+	const { secondary, title, startPath, urlBack, breadCrumb } = props;
 
-	// Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
+	const navigate = useNavigate();
+
 	const mainText = useColorModeValue('navy.700', 'white');
 	const secondaryText = useColorModeValue('gray.700', 'white');
 	const navbarIcon = useColorModeValue('gray.400', 'white');
@@ -60,53 +66,49 @@ export const Navbar = (props: {
 				w="100%">
 				<Flex
 					w='100%'
-					flexDirection={{
-						sm: 'column',
-						md: 'row'
-					}}
+					flexDirection={{ sm: 'column', md: 'row' }}
 					alignItems={{ xl: 'center' }}
 					mb={gap}>
 					<Box mb={{ sm: '8px', md: '0px' }}>
-						<Breadcrumb>
-							<BreadcrumbItem color={secondaryText} fontSize='sm' mb='5px'>
-								<BreadcrumbLink href='/' color={secondaryText}>
-									<Icon as={MdHome} color={navbarIcon} fontSize="20px" lineHeight="1" />
-								</BreadcrumbLink>
-							</BreadcrumbItem>
+						<Flex direction="row" alignItems="center" gap="8px" mb="4px">
+							{urlBack && <Button leftIcon={<ArrowBackIcon />} size="xs" onClick={() => navigate(urlBack)} colorScheme="brand" variant="outline">Voltar</Button>}
 
-							{/* <BreadcrumbItem color={secondaryText} fontSize='sm' mb='5px'>
-							<BreadcrumbLink href='#' color={secondaryText}>
-								{title}
-							</BreadcrumbLink>
-						</BreadcrumbItem> */}
-						</Breadcrumb>
+							<Breadcrumb alignItems="center" height="auto">
+								<BreadcrumbItem color={secondaryText} fontSize='sm'>
+									<BreadcrumbLink onClick={() => navigate(startPath)} color={secondaryText} verticalAlign="bottom" display="inline">
+										<Icon as={MdHome} color={navbarIcon} fontSize="20px" lineHeight="1" display="block" />
+									</BreadcrumbLink>
+								</BreadcrumbItem>
 
-						{/* Here we create navbar brand, based on route name */}
-						<Link
+								{Object.entries(breadCrumb ?? {}).map(([url, title], index) => (
+									<BreadcrumbItem key={url} color={secondaryText} fontSize='sm' isCurrentPage={index === Object.keys(breadCrumb ?? {}).length - 1}>
+										<BreadcrumbLink href={url} color={secondaryText}>
+											{title}
+										</BreadcrumbLink>
+									</BreadcrumbItem>
+								))}
+							</Breadcrumb>
+						</Flex>
+
+						<Heading
+							as="h2"
 							color={mainText}
-							href='#'
-							bg='inherit'
-							borderRadius='inherit'
 							fontWeight='bold'
 							fontSize='34px'
-							_hover={{ color: { mainText } }}
-							_active={{
-								bg: 'inherit',
-								transform: 'none',
-								borderColor: 'transparent'
-							}}
-							_focus={{
-								boxShadow: 'none'
-							}}>
+							whiteSpace="nowrap"
+							width="100%"
+							overflow="hidden"
+							textOverflow="ellipsis"
+							py="4px">
 							{title}
-						</Link>
+						</Heading>
 					</Box>
 
 					<Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
 						<HeaderLinks secondary={props.secondary} />
 					</Box>
 				</Flex>
-			</Box>
-		</Box>
+			</Box >
+		</Box >
 	);
 }

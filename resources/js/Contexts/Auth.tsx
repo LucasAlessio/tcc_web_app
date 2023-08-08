@@ -1,6 +1,6 @@
 import { LoaderPage } from "@/Pages/Loading";
 import { PageProps, User } from "@/types";
-import { createReducerContext } from "@/utils/createReducerContext";
+import { createReducerContext } from "@/Components/utils/createReducerContext";
 import { http } from "@/utils/http";
 import { AxiosError, AxiosResponse } from "axios";
 import { PropsWithChildren } from "react";

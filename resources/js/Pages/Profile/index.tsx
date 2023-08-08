@@ -5,7 +5,9 @@ import { DeleteAccount } from "./DeleteAccount";
 
 export const Profile = () => {
 	return (
-		<Page title="Meu perfil">
+		<Page
+			title="Meu perfil"
+			startPath="/perfil">
 			<ProfileInformation />
 
 			<UpdatePassword />

@@ -1,6 +1,6 @@
 import { useFilterContext } from "@/Components/Filter";
 import { PsychologistsPage } from "../types";
 
-export const useFilters = () => {
+export const usePsychologistsFilters = () => {
 	return useFilterContext<PsychologistsPage.Filters>();
 }
