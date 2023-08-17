@@ -4,9 +4,11 @@ import { FieldErrors } from "react-hook-form";
 
 export const HelpBlockError = ({ errors, name }: { errors: FieldErrors; name: string }) => {
 	return (
-		<ErrorMessage
-			errors={errors}
-			name={name}
-			render={({ message }) => <FormErrorMessage>{message}</FormErrorMessage>} />
+		<>
+			<ErrorMessage
+				errors={errors}
+				name={name}
+				render={({ message }) => <FormErrorMessage>{message}</FormErrorMessage>} />
+		</>
 	);
 };

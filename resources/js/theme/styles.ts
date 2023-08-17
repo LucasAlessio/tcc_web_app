@@ -91,6 +91,9 @@ export const globalStyles = {
 			},
 			input: {
 				color: 'gray.700'
+			},
+			texarea: {
+				color: 'red'
 			}
 		})
 	}

@@ -21,6 +21,6 @@ export const http: AxiosInstance = axios.create({
 });
 
 http.interceptors.response.use(
-	(response) => response.data,
-	(error) => Promise.reject(error.response.data),
+	(response) => response.data ?? undefined,
+	(error) => Promise.reject(error?.response.data ?? error),
 )
