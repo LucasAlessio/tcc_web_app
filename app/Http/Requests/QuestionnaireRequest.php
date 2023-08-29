@@ -31,16 +31,40 @@ class QuestionnaireRequest extends FormRequest
 			'questions' => ['required', 'array', 'min:1'],
 			'questions.*.description' => ['required', 'string'],
 			'questions.*.type' => ['required', 'integer', Rule::in(array_column(QuestionTypeEnum::cases(), 'value'))],
-			'questions.*.alternatives' => ['required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value, 'array'],
-            'questions.*.alternatives.*.description' => ['required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value, 'nullable', 'string'],
+			'questions.*.alternatives' => [
+				'required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value,
+				'required_if:questions.*.type,' . QuestionTypeEnum::MULTIPLE_CHOICE->value,
+				'array'
+			],
+            'questions.*.alternatives.*.description' => [
+				'required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value,
+				'required_if:questions.*.type,' . QuestionTypeEnum::MULTIPLE_CHOICE->value,
+				'nullable',
+				'string'
+			],
 		];
 	}
 
 	public function withValidator($validator)
 	{
 		$validator->sometimes('questions.*.alternatives', ['min:2'], function ($input, $attr) {
-			return $attr['type'] == QuestionTypeEnum::CHOICE->value;
+			return in_array($attr['type'], [QuestionTypeEnum::CHOICE->value, QuestionTypeEnum::MULTIPLE_CHOICE->value]);
 		});
+
+		$validator->sometimes('id', ['required', 'integer'], function ($input) {
+			// Verifique se é uma atualização de registro
+			return $this->getMethod() === 'PUT';
+		});
+
+		// $validator->sometimes('questions.*.id', ['required', 'integer'], function ($input) {
+		// 	// Verifique se é uma atualização de registro
+		// 	return $this->getMethod() === 'PUT';
+		// });
+
+		// $validator->sometimes('questions.*.alternatives.*.id', ['required', 'integer'], function ($input) {
+		// 	// Verifique se é uma atualização de registro
+		// 	return $this->getMethod() === 'PUT';
+		// });
 	}
 
 	public function messages()

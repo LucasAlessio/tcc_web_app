@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Question extends Model
 {
@@ -19,6 +20,7 @@ class Question extends Model
 	protected $fillable = [
 		'description',
 		'type',
+		'position',
 	];
 
 	public function questionnaire(): BelongsTo
@@ -29,5 +31,14 @@ class Question extends Model
 	public function alternatives(): HasMany
 	{
 		return $this->hasMany(Alternative::class, 'question_id');
+	}
+
+	protected static function booted(): void
+	{
+		static::addGlobalScope('order', function (Builder $builder) {
+			$builder
+				->orderBy('position', 'ASC')
+				->orderBy('id', 'DESC');
+		});
 	}
 }

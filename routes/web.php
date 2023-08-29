@@ -24,8 +24,12 @@ use Inertia\Inertia;
 Route::group(['middleware' => 'auth'], function() {
 	Route::group(['prefix' => 'get'], function() {
 		Route::get('/identity', [AuthenticatedSessionController::class, 'index'])->name('profile');
+		
 		Route::get('/psychologists', [PsychologistsController::class, 'index'])->name('psychologists.index');
 		Route::get('/psychologists/{id}', [PsychologistsController::class, 'edit'])->name('psychologists.edit');
+
+		Route::get('/questionnaires', [QuestionnairesController::class, 'index'])->name('questionnaires.index');
+		Route::get('/questionnaires/{id}', [QuestionnairesController::class, 'edit'])->name('questionnaires.edit');
 	});
 
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -36,6 +40,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::delete('/psychologists/{id}', [PsychologistsController::class, 'destroy'])->name('psychologists.destroy');
 
 	Route::post('/questionnaires', [QuestionnairesController::class, 'store'])->name('questionnaires.store');
+	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
 
 });
 

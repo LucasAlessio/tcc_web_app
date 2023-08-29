@@ -20,8 +20,8 @@ type QuestionProps = {
 };
 
 export const Question = ({ field, questionIndex, handleClone, handleRemove, handleUpdate, handleMoveUp, handleMoveDown }: QuestionProps) => {
-	const { register, formState: { errors }, control, clearErrors } = useFormContext<QuestionnairesPage.TAddForm>();
-	const { fields, append, remove } = useFieldArray({
+	const { register, formState: { errors }, control, getValues, clearErrors } = useFormContext<QuestionnairesPage.TAddForm>();
+	const { fields, append, remove, update } = useFieldArray({
 		control,
 		name: `questions.${questionIndex}.alternatives`,
 		keyName: "_id",
@@ -38,6 +38,17 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 	const handleRemoveAlternative = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
+			const alternative = getValues(`questions.${questionIndex}.alternatives.${index}`);
+
+			if (alternative.id) {
+				update(index, {
+					...alternative,
+					deleted: true,
+				});
+
+				return;
+			}
+
 			remove(index);
 		};
 
@@ -45,11 +56,15 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 	const handleChangeQuestionType = (value: ValuesOf<typeof QuestionTypeEnum>) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
+			// Necessário fazer dessa forma para
+			// pegar as alternativas aninhadas também
+			const field = getValues(`questions.${questionIndex}`);
+
 			if (value == field.type) return;
 
 			clearErrors(`questions.${questionIndex}.alternatives`);
 
-			if (value == QuestionTypeEnum.CHOICE) {
+			if (value == QuestionTypeEnum.CHOICE || value == QuestionTypeEnum.MULTIPLE_CHOICE) {
 				return handleUpdate({
 					...field,
 					type: value,
@@ -117,10 +132,12 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 				</FormControl>
 			</SimpleGrid>
 
-			{field.type == QuestionTypeEnum.CHOICE && (
+			{(field.type == QuestionTypeEnum.CHOICE || field.type == QuestionTypeEnum.MULTIPLE_CHOICE) && (
 				<>
 					<Flex position="relative" justifyContent="flex-start" flexWrap="wrap" mx="-6px" zIndex={0} mb="12px">
-						{fields.map((field, index) => <Alternative key={field._id} questionIndex={questionIndex} alternativeIndex={index} handleRemove={handleRemoveAlternative(index)} />)}
+						{fields.filter(field => !field.deleted).map((field, index) => (
+							<Alternative key={field._id} questionIndex={questionIndex} alternativeIndex={index} handleRemove={handleRemoveAlternative(index)} />
+						))}
 
 						<Box px="6px" mb="12px">
 							<Tooltip label="Adicionar alternativa" hasArrow placement="top">

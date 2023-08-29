@@ -7,6 +7,7 @@ use App\Models\Questionnaire;
 use App\Repositories\EloquentQuestionnairesRepository;
 use App\Repositories\QuestionnairesRepository;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class QuestionnairesController extends Controller
 {
@@ -18,9 +19,9 @@ class QuestionnairesController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		//
+		return $this->repository->getAll(collect($request->all()));
 	}
 
 	/**
@@ -36,7 +37,7 @@ class QuestionnairesController extends Controller
 	 */
 	public function store(QuestionnaireRequest $request)
 	{
-		return $this->repository->add(array_merge($request->all(), [
+		return $this->repository->create(array_merge($request->all(), [
 			"user_id" => $request->user()->id,
 		]));
 	}
@@ -52,17 +53,23 @@ class QuestionnairesController extends Controller
 	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit(Questionnaire $questionnaire)
+	public function edit($id)
 	{
-		//
+		$questionnaire = $this->repository->getById($id);
+
+		if (!$questionnaire) {
+			throw new NotFoundHttpException("Nenhum registro encontrado");
+		}
+	
+		return $questionnaire;
 	}
 
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Request $request, Questionnaire $questionnaire)
+	public function update(QuestionnaireRequest $request, $id)
 	{
-		//
+		$questionnaire = $this->repository->update(intval($id), $request->all());
 	}
 
 	/**

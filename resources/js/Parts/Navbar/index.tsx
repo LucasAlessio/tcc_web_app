@@ -37,7 +37,8 @@ export const Navbar = (props: {
 			top={{ base: '12px', md: '16px', xl: '18px' }}
 			width="100%"
 			ps={{ base: "20px", md: "30px", xl: "330px" }}
-			pe={{ base: "20px", md: "30px" }}>
+			pe={{ base: "20px", md: "30px" }}
+			zIndex={1000}>
 			<Box
 				boxShadow={navbarShadow}
 				bg={navbarBg}

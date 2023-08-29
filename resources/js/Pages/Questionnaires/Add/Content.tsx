@@ -1,20 +1,13 @@
-import { FormProvider, useForm } from "react-hook-form";
-import { QuestionnairesPage } from "../types";
-import { Form } from "./Form";
+import { Card } from "@/Components/Card";
+import { SimpleGrid } from "@chakra-ui/react";
+import { FormProvider } from "./FormProvider";
 
 export const Content = () => {
-	const form = useForm<QuestionnairesPage.TAddForm>({
-		defaultValues: {
-			name: "",
-			description: "",
-			recurrence: undefined,
-			questions: [],
-		},
-	});
-
 	return (
-		<FormProvider {...form}>
-			<Form />
-		</FormProvider>
+		<SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
+			<Card>
+				<FormProvider />
+			</Card>
+		</SimpleGrid>
 	);
 };

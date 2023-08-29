@@ -15,6 +15,7 @@ return new class extends Migration
 			$table->id();
 			$table->text('description');
 			$table->enum('type', array_column(\App\Enums\QuestionTypeEnum::cases(), 'value'))->default(\App\Enums\QuestionTypeEnum::CHOICE->value);
+			$table->unsignedTinyInteger('posicao');
 			$table->unsignedBigInteger('questionnaire_id', false);
 			$table->foreign('questionnaire_id')->references('id')->on('questionnaires');
 			$table->timestamps();
