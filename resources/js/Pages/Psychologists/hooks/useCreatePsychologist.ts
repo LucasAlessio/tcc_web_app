@@ -4,7 +4,7 @@ import { ValidationError } from "yup";
 import { PsychologistsPage } from "../types";
 
 export const useCreatePsychologist = () => {
-	return useMutation<boolean, ValidationError | Error, PsychologistsPage.TAddForm>({
+	return useMutation<boolean, ValidationError | Error, PsychologistsPage.TForm>({
 		mutationKey: ['create.psychologist'],
 		mutationFn: (data) => http.post(route('psychologists.store'), { ...data }),
 	});

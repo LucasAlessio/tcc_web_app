@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
-	public function getAll(Collection $filters) {
+	public function getAll(Collection $filters): object {
 		$query = Questionnaire::query();
 
 		if ($filters->has("search")) {
@@ -22,7 +22,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT);
 	}
 
-	public function getById(int $id) {
+	public function getById(int $id): Questionnaire {
 		$questionnaire = Questionnaire::where([
 			'id' => $id,
 		])
@@ -57,9 +57,9 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			
 			return $questionnaire->load('questions.alternatives');
 		} catch (\Exception $e) {
-			throw new \Exception($e->getMessage());
-
 			DB::rollBack();
+
+			throw $e;
 		}
 	}
 
@@ -77,9 +77,9 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
 			return $questionnaire;
 		} catch (\Exception $e) {
-			throw new \Exception($e->getMessage());
-
 			DB::rollBack();
+
+			throw $e;
 		}
 	}
 

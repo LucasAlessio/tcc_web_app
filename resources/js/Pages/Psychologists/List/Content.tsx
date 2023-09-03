@@ -101,6 +101,7 @@ export const Content = () => {
 									<Tr>
 										<Th>Nome</Th>
 										<Th>E-mail</Th>
+										<Th>Registro</Th>
 										<Th>Criado em</Th>
 										<Th w="120px">Ações</Th>
 									</Tr>
@@ -136,6 +137,7 @@ export const Content = () => {
 												<Tr key={value.id}>
 													<Td>{value.name}</Td>
 													<Td>{value.email}</Td>
+													<Td>{value.psychologist?.registration_number}</Td>
 													<Td>{date2br(value.created_at)}</Td>
 													<Td w="120px">
 														<Tooltip label="Editar" hasArrow placement="top">

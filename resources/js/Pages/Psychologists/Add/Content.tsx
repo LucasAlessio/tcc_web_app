@@ -11,7 +11,7 @@ import { useCreatePsychologist } from "../hooks/useCreatePsychologist";
 import { PsychologistsPage } from "../types";
 
 export const Content = () => {
-	const { register, handleSubmit, formState: { errors }, setError } = useForm<PsychologistsPage.TAddForm>({
+	const { register, handleSubmit, formState: { errors }, setError } = useForm<PsychologistsPage.TForm>({
 		defaultValues: {
 			name: "",
 			email: "",
@@ -42,7 +42,7 @@ export const Content = () => {
 			onError(e) {
 				if (isValidationException(e)) {
 					Object.entries(e.errors).map(([field, errors]) => {
-						setError(field as Path<PsychologistsPage.TAddForm>, {
+						setError(field as Path<PsychologistsPage.TForm>, {
 							message: errors[0],
 							type: "validate",
 						});
@@ -84,6 +84,14 @@ export const Content = () => {
 							<Label>E-mail</Label>
 							<TextInput {...register("email")} placeholder="E-mail" />
 							<HelpBlockError name="email" errors={errors} />
+						</FormControl>
+					</SimpleGrid>
+
+					<SimpleGrid columns={{ base: 1, md: 2, xl: 2 }}>
+						<FormControl mb='12px' isInvalid={!!errors.psychologist?.registration_number}>
+							<Label>Número de registro</Label>
+							<TextInput {...register("psychologist.registration_number")} placeholder="Número de registro" />
+							<HelpBlockError name="psychologist.registration_number" errors={errors} />
 						</FormControl>
 					</SimpleGrid>
 

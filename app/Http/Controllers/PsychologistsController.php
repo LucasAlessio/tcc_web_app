@@ -2,29 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\SystemConfigEnum;
-use App\Enums\UserRole;
 use App\Http\Requests\PsychologistRequest;
-use App\Models\User;
+use App\Repositories\PsychologistsRepository;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PsychologistsController extends Controller
 {
+	public function __construct(
+		private PsychologistsRepository $repository,
+	) { }
+
 	/**
 	 * Display a listing of the resource.
 	 */
 	public function index(Request $request)
 	{
-		$query = User::where('role', UserRole::PSYCHOLOGIST->value);
-
-		if ($request->filled("search")) {
-			$query->where("name", "like", '%' . (string) $request->query("search") . '%');
-		}
-
-		return $query->paginate($request->integer("limit", SystemConfigEnum::PAGE_LIMIT_DEFAULT));
+		return $this->repository->getAll(collect($request->all()));
 	}
 
 	/**
@@ -32,10 +27,7 @@ class PsychologistsController extends Controller
 	 */
 	public function store(PsychologistRequest $request)
 	{
-		$user = User::create(array_merge($request->all(), [
-			'password' => Hash::make($request->password),
-			'role' => UserRole::PSYCHOLOGIST->value,
-		]));
+		$user = $this->repository->create($request->all());
 
 		event(new Registered($user));
 
@@ -47,10 +39,7 @@ class PsychologistsController extends Controller
 	 */
 	public function edit($id)
 	{
-		$user = User::where([
-			'role' => UserRole::PSYCHOLOGIST->value,
-			'id' => $id,
-		])->first();
+		$user = $this->repository->getById((int) $id);
 	
 		if (!$user) {
 			throw new NotFoundHttpException("Nenhum registro encontrado");
@@ -64,14 +53,7 @@ class PsychologistsController extends Controller
 	 */
 	public function update(PsychologistRequest $request, $id)
 	{
-		$user = User::where([
-			'role' => UserRole::PSYCHOLOGIST->value,
-			'id' => $id,
-		])->update(array_filter(
-			array_merge($request->validated(), [
-				'password' => $request->filled('password') ? Hash::make($request->password) : null,
-			])
-		));
+		$user = $this->repository->update((int) $id, $request->validated());
 
 		if (!$user) {
 			throw new NotFoundHttpException("Nenhum registro encontrado");
@@ -85,15 +67,8 @@ class PsychologistsController extends Controller
 	 */
 	public function destroy($id)
 	{
-		$user = User::where([
-			'role' => UserRole::PSYCHOLOGIST->value,
-			'id' => $id,
-		]);
-
-		if (!$user->count()) {
+		if (!$this->repository->delete((int) $id)) {
 			throw new NotFoundHttpException("Nenhum registro encontrado");
 		}
-
-		$user->delete();
 	}
 }

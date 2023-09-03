@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\UserRole;
 use App\Exceptions\AuthorizationException;
+use App\Models\Psychologists;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,6 +33,7 @@ class PsychologistRequest extends FormRequest
 		return [ 
 			'name' => ['required', 'string'],
 			'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique(User::class)->ignore($this->id)],
+			'psychologist.registration_number' => ['required', 'string', Rule::unique(Psychologists::class, 'registration_number')->ignore($this->id, 'user_id')],
 			'password' => [],
 		];
 	}
@@ -51,6 +53,8 @@ class PsychologistRequest extends FormRequest
 			'email.required' => 'Por favor, informe o e-mail',
 			'email.email' => 'Por favor, informe um e-mail válido',
 			'email.unique' => 'Este e-mail já está em uso',
+			'psychologist.registration_number.required' => 'Por favor, informe o registro do psicólogo',
+			'psychologist.registration_number.unique' => 'Este número de registro já está cadastrado',
 			'password.required' => 'Por favor, informe a senha',
 		];
 	}
