@@ -28,7 +28,7 @@ class Authenticate extends Middleware
 	protected function unauthenticated($request, array $guards)
 	{
 		throw new AuthenticationException(
-			'Sua sessão expirou. Atualize a página e faça login novamente para continuar.',
+			$request->is('api/*') ? 'Authorization Token inválido' : 'Sua sessão expirou. Atualize a página e faça login novamente para continuar.',
 			$guards,
 			$request->expectsJson() ? null : $this->redirectTo($request)
 		);
