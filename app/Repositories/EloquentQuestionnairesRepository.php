@@ -19,7 +19,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			$query->where("name", "like", '%' . (string) $filters->get("search") . '%');
 		}
 
-		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT);
+		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
 	public function getById(int $id): Questionnaire {
@@ -81,6 +81,11 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
 			throw $e;
 		}
+	}
+
+	public function getAllFromPatient(): object {
+		$query = Questionnaire::all();
+		return $query;
 	}
 
 	private function updateQuestions(Questionnaire $questionnaire, array $questions) {

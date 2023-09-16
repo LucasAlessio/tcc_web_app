@@ -15,4 +15,6 @@ interface QuestionnairesRepository {
 
 	public function update(int $id, array $data): Questionnaire;
 
+	public function getAllFromPatient(): object;
+
 }

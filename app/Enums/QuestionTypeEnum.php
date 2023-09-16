@@ -4,6 +4,8 @@ namespace App\Enums;
 
 enum QuestionTypeEnum: int
 {
+	use getEnumValuesTrait;
+
 	case SHORT_TEXT = 1;
 	case LONG_TEXT = 2;
 	case CHOICE = 3;

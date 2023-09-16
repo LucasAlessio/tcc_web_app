@@ -30,7 +30,7 @@ class QuestionnaireRequest extends FormRequest
 			'recurrence' => ['required', 'integer', 'regex:/^[+]?\d+([.]\d+)?$/'],
 			'questions' => ['required', 'array', 'min:1'],
 			'questions.*.description' => ['required', 'string'],
-			'questions.*.type' => ['required', 'integer', Rule::in(array_column(QuestionTypeEnum::cases(), 'value'))],
+			'questions.*.type' => ['required', 'integer', Rule::in(QuestionTypeEnum::getValues())],
 			'questions.*.alternatives' => [
 				'required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value,
 				'required_if:questions.*.type,' . QuestionTypeEnum::MULTIPLE_CHOICE->value,
