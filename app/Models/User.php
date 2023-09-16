@@ -53,7 +53,7 @@ class User extends Authenticatable
 
 	public function psychologist(): HasOne
 	{
-		return $this->hasOne(Psychologists::class, 'user_id');
+		return $this->hasOne(Psychologist::class, 'user_id');
 	}
 
 	public function patient(): HasOne

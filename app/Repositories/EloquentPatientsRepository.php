@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class EloquentPsychologistsRepository implements PatientsRepository {
+class EloquentPatientsRepository implements PatientsRepository {
 
 	public function create(array $data): User {
 		try {

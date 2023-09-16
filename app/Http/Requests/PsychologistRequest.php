@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\UserRole;
 use App\Exceptions\AuthorizationException;
-use App\Models\Psychologists;
+use App\Models\Psychologist;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,7 +33,7 @@ class PsychologistRequest extends FormRequest
 		return [ 
 			'name' => ['required', 'string'],
 			'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique(User::class)->ignore($this->id)],
-			'psychologist.registration_number' => ['required', 'string', Rule::unique(Psychologists::class, 'registration_number')->ignore($this->id, 'user_id')],
+			'psychologist.registration_number' => ['required', 'string', Rule::unique(Psychologist::class, 'registration_number')->ignore($this->id, 'user_id')],
 			'password' => [],
 		];
 	}

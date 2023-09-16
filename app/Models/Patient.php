@@ -32,6 +32,6 @@ class Patient extends Model
 
 	public function psychologist(): BelongsTo
 	{
-		return $this->belongsTo(Psychologists::class, 'user_id');
+		return $this->belongsTo(Psychologist::class, 'user_id');
 	}
 }
