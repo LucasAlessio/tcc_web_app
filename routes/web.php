@@ -41,7 +41,6 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::post('/questionnaires', [QuestionnairesController::class, 'store'])->name('questionnaires.store');
 	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
-
 });
 
 Route::get('/{path?}', function () {

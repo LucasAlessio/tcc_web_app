@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -21,6 +20,7 @@ class PasswordController extends Controller
 			'password_confirmation' => ['required_with:password', 'same:password'],
 		], [
 			'current_password.required' => 'Por favor, informe a senha atual',
+			'password.min' => 'A senha deve conter no mínimo :min caracteres',
 			'current_password.current_password' => 'A senha informada é inválida',
 			'password.required' => 'Por favor, informe a nova senha',
 			'password.different' => 'A nova senha deve ser diferente da senha atual',
@@ -31,7 +31,5 @@ class PasswordController extends Controller
 		$request->user()->update([
 			'password' => Hash::make($validated['password']),
 		]);
-
-		// return back();
 	}
 }

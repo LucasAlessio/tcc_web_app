@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-class PatientRequest extends FormRequest
+class ProfileUpdateRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class PatientRequest extends FormRequest
 	{
 		return [
 			'name' => ['required', 'string', 'max:255'],
-			'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique(User::class)],
+			'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
 			'gender' => ['required', Rule::in(\App\Enums\GenderEnum::getValues())],
 			'occupation' => ['required', 'string', 'max:255'],
 			'marital_status' => ['required', Rule::in(\App\Enums\MaritalStatusEnum::getValues())],
@@ -35,9 +35,6 @@ class PatientRequest extends FormRequest
 			'family_with_chronic_illnesses' => ['required', 'boolean'],
 			'family_with_psychiatric_disorders' => ['required', 'boolean'],
 			'psychologist_registration_number' => ['required', 'string'],
-			'password' => ['required', Password::defaults()],
-			'password_confirmation' => ['required_with:password', 'same:password'],
-			'device_name' => ['required', 'string', 'max:32']
 		];
 	}
 
@@ -70,12 +67,6 @@ class PatientRequest extends FormRequest
 			'family_with_chronic_illnesses.required' => 'Por favor, informe se você ou seus familiares possuem alguma doença crônica',
 			'family_with_psychiatric_disorders.required' => 'Por favor, informe se você ou seus familiares possuem algum transtorno psiquiátrico',
 			'psychologist_registration_number.required' => 'Por favor, informe o número de registro do psicólogo',
-			'password.required' => 'Por favor, informe a senha',
-			'password.min' => 'A senha deve conter no mínimo :min caracteres',
-			'password_confirmation' => [
-				'required_with' => 'Por favor, confirme a nova senha',
-				'same' => 'A senha e sua confirmação não correspondem',
-			],
 		];
 	}
 }

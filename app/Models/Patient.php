@@ -23,6 +23,7 @@ class Patient extends Model
 		'schooling',
 		'family_with_chronic_illnesses',
 		'family_with_psychiatric_disorders',
+		'psychologist_id',
 	];
 
 	public function user(): BelongsTo
@@ -32,6 +33,6 @@ class Patient extends Model
 
 	public function psychologist(): BelongsTo
 	{
-		return $this->belongsTo(Psychologist::class, 'user_id');
+		return $this->belongsTo(User::class, 'psychologist_id');
 	}
 }

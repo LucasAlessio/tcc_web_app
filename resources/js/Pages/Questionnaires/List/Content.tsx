@@ -14,7 +14,7 @@ import { date2br } from "@/utils/date";
 import { Link } from "react-router-dom";
 
 export const Content = () => {
-	const { data, isFetching, isSuccess, isError, error, refetch } = useGetQuestionnaires();
+	const { data, isFetching, isSuccess, isError, error } = useGetQuestionnaires();
 	const { form: { register, setValue }, filters, applyFilters } = useQuestionnairesFilters();
 
 	const navigate = useNavigate();

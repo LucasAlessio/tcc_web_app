@@ -50,5 +50,6 @@ export declare module QuestionnairesPage {
 				}[],
 			})
 		)[],
+		created_at: string,
 	}
 }
