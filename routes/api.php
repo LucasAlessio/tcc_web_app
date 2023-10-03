@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnswersController;
 use App\Http\Controllers\Api\Auth\AuthenticatedTokenController;
 use App\Http\Controllers\Api\PatientsController;
 use App\Http\Controllers\Api\QuestionnairesController;
@@ -22,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 Route::post('/login', [AuthenticatedTokenController::class, 'store']);
 
-Route::group(['middleware' => ['auth:sanctum', ]], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
 	Route::get('/profile', [PatientsController::class, 'show']);
 	Route::post('/profile', [PatientsController::class, 'update']);
 	Route::put('/password', [PasswordController::class, 'update']);
@@ -32,11 +33,12 @@ Route::group(['middleware' => ['auth:sanctum', ]], function() {
 	
 	Route::get('/questionnaires', [QuestionnairesController::class, 'index']);
 	Route::get('/questionnaires/{id}', [QuestionnairesController::class, 'show']);
+	Route::post('/questionnaires/{id}/answer', [AnswersController::class, 'store']);
 });
 
 Route::post('/register', [PatientsController::class, 'store']);
 
 
-Route::any('/*', function() {
-	return response(null, Response::HTTP_UNAUTHORIZED);
-});
+Route::any('/{path?}', function(){
+	return response()->json(['message' => 'Rota não encontrada'], Response::HTTP_NOT_FOUND);
+})->where('path', '.*');

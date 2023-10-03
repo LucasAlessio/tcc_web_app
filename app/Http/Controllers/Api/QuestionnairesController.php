@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Questionnaire;
 use App\Repositories\QuestionnairesRepository;
 use Illuminate\Http\Request;
 

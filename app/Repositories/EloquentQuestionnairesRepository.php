@@ -22,12 +22,12 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
-	public function getById(int $id): Questionnaire {
+	public function getById(int $id): ?Questionnaire {
 		$questionnaire = Questionnaire::where([
 			'id' => $id,
 		])
-			->first()
-			->load('questions.alternatives');
+			->with('questions.alternatives')
+			->first();
 
 		return $questionnaire;
 	}

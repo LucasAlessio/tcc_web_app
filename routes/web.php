@@ -48,7 +48,7 @@ Route::get('/{path?}', function () {
 		'laravelVersion' => Application::VERSION,
 		'phpVersion' => PHP_VERSION,
 	]);
-})->where('path', '^(?!api).*');
+})->where('path', '.*');
 
 Route::middleware('auth')->group(function () {});
 

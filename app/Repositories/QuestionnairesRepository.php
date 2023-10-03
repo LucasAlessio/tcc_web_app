@@ -9,7 +9,7 @@ interface QuestionnairesRepository {
 
 	public function getAll(Collection $filters): object;
 
-	public function getById(int $id): Questionnaire;
+	public function getById(int $id): ?Questionnaire;
 
 	public function create(array $data): Questionnaire;
 
