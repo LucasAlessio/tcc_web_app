@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Repositories\QuestionnairesRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class QuestionnairesController extends Controller
 {
@@ -18,14 +21,6 @@ class QuestionnairesController extends Controller
 	public function index()
 	{
 		return $this->repository->getAllFromPatient();
-	}
-
-	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store(Request $request)
-	{
-		//
 	}
 
 	/**

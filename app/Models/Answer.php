@@ -16,21 +16,11 @@ class Answer extends Model
 	 * @var array<int, string>
 	 */
 	protected $fillable = [
-		'questionnaire_id',
+		'comment',
 		'question_id',
 		'alternative_id',
-		'user_id',
-		/**
-		 * created_at adicionado para garantir que todas as respostas
-		 * de um formulário tenham a mesma data de criação
-		 */
-		'created_at'
+		'answers_group_id',
 	];
-
-	public function questionnaire(): BelongsTo
-	{
-		return $this->belongsTo(Questionnaire::class, 'questionnaire_id');
-	}
 
 	public function question(): BelongsTo
 	{
@@ -42,8 +32,8 @@ class Answer extends Model
 		return $this->belongsTo(Alternative::class, 'alternative_id');
 	}
 
-	public function user(): BelongsTo
+	public function group(): BelongsTo
 	{
-		return $this->belongsTo(User::class, 'user_id');
+		return $this->belongsTo(AnswersGroup::class, 'answers_group_id');
 	}
 }

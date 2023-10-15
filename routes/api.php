@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 	Route::put('/password', [PasswordController::class, 'update']);
 
 	Route::post('/refresh', [AuthenticatedTokenController::class, 'update']);
-	Route::post('/logout', [AuthenticatedTokenController::class, 'delete']);
+	Route::post('/logout', [AuthenticatedTokenController::class, 'destroy']);
 	
 	Route::get('/questionnaires', [QuestionnairesController::class, 'index']);
 	Route::get('/questionnaires/{id}', [QuestionnairesController::class, 'show']);

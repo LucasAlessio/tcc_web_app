@@ -112,7 +112,7 @@ class PatientsController extends Controller
 
 			continue;
 		}
-		
+
 		return $response;
 	}
 

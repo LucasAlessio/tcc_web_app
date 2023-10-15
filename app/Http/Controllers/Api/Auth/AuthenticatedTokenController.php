@@ -8,10 +8,14 @@ use App\Models\User;
 use App\Services\TokenApiService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthenticatedTokenController extends Controller
 {
@@ -22,9 +26,12 @@ class AuthenticatedTokenController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(FormRequest $request)
+	public function store(Request $request)
 	{
-		$request->validate([
+		// return Crypt::encrypt(true);
+		return Crypt::decrypt('eyJpdiI6ImhlVitJWHZtZWluYW55UklsMVUwV0E9PSIsInZhbHVlIjoiTXlDMFhxY01WZlUxS2JWakpZYlgzZz09IiwibWFjIjoiMDFhODZjNWU5MDhmOGY1ZmI3ZWNkM2UzYzc0NjcxODYyZDhlNGU1YjEyOTIwMGIwOTc0YWE0YTBmMzQ3MzI4NCIsInRhZyI6IiJ9', true);
+
+		$validated = $request->validate([
 			'email' => ['required', 'email'],
 			'password' => 'required',
 			'device_name' => ['required', 'string', 'max:32'],
@@ -52,7 +59,7 @@ class AuthenticatedTokenController extends Controller
 
 			$user->tokens()->delete();
 			
-			$token = $this->tokenService->generateToken($user, $request->validated('device_name', 'UNKNOWN'));
+			$token = $this->tokenService->generateToken($user, $validated['device_name'] ?? 'UNKNOWN');
 
 			DB::commit();
 
@@ -69,15 +76,23 @@ class AuthenticatedTokenController extends Controller
 	 */
 	public function update(FormRequest $request)
 	{
+		$validated = $request->validate([
+			'device_name' => ['required', 'string', 'max:32'],
+		]);
+
 		try {
 			DB::beginTransaction();
 
 			$user = $request->user();
-			
 			$token = $user->currentAccessToken();
 
-			$user->tokens()->delete();
+			if ($token->name != $validated['device_name']) {
+				throw ValidationException::withMessages([
+					'device_name' => 'Não foi possível atualizar o token',
+				]);
+			}
 
+			$user->tokens()->delete();
 			$token = $this->tokenService->generateToken($user, $token->name);
 			
 			DB::commit();
