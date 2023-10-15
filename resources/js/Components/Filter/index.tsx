@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { DeepPartial, FieldErrors, FieldValues, UseFormProps, UseFormReturn, UseFormSetValue, useForm } from "react-hook-form";
 
 type FilterFormatDefault = FieldValues;
@@ -15,15 +15,13 @@ export type TContextFilters<T extends FilterFormatDefault = FilterFormatDefault>
 type FilterProviderProps<T extends FilterFormatDefault> = {
 	children?: React.ReactNode | ((context: TContextFilters<T>) => React.ReactNode) | undefined;
 	defaultValues: T,
-	formOptions?: UseFormProps<T>,
+	formOptions?: Omit<UseFormProps<T>, "defaultValues">,
 }
 
 const ContextFilters = createContext<TContextFilters>({} as TContextFilters);
 
 export function FiltersProvider<T extends FilterFormatDefault = FilterFormatDefault>({ defaultValues, formOptions, children }: FilterProviderProps<T>) {
 	const [filters, setFilters] = useState<T>(defaultValues);
-
-	formOptions?.resolver
 
 	const form = useForm<T>({
 		...formOptions,
