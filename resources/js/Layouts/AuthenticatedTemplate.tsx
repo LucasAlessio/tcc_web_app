@@ -4,7 +4,6 @@ import { Sidebar } from '@/Parts/Sidebar';
 import { Box } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 
-// Custom Chakra theme
 export const AuthenticatedTemplate = PrivatePage(() => {
 	return (
 		<Box>

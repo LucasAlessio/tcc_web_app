@@ -4,7 +4,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+// import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }: { status?: { error?: string, success?: string }, canResetPassword: boolean }) {
@@ -37,7 +37,7 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 				<div>
 					<InputLabel htmlFor="email" value="Email" />
 
-					<TextInput
+					{/* <TextInput
 						id="email"
 						type="text"
 						name="email"
@@ -46,7 +46,7 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 						autoComplete="username"
 						isFocused={true}
 						onChange={(e) => setData('email', e.target.value)}
-					/>
+					/> */}
 
 					<InputError message={errors.email} className="mt-2" />
 				</div>
@@ -54,7 +54,7 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 				<div className="mt-4">
 					<InputLabel htmlFor="password" value="Password" />
 
-					<TextInput
+					{/* <TextInput
 						id="password"
 						type="password"
 						name="password"
@@ -62,7 +62,7 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 						className="mt-1 block w-full"
 						autoComplete="current-password"
 						onChange={(e) => setData('password', e.target.value)}
-					/>
+					/> */}
 
 					<InputError message={errors.password} className="mt-2" />
 				</div>

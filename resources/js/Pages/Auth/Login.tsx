@@ -121,6 +121,7 @@ export const Login = () => {
 								Informe seu e-mail e sua senha para acessar
 							</Text>
 						</Box>
+
 						<Flex
 							zIndex='2'
 							direction='column'
@@ -131,11 +132,13 @@ export const Login = () => {
 							mx={{ base: "auto", lg: "unset" }}
 							me='auto'
 							mb={{ base: "20px", md: "auto" }}>
+
 							<FormControl mb='24px' isInvalid={!!errors.email}>
 								<Label>E-mail <Text color={brandStars}>*</Text></Label>
 								<TextInput {...register("email")} variant="auth" size="lg" placeholder="email@ucs.br" />
 								<HelpBlockError name="email" errors={errors} />
 							</FormControl>
+
 							<FormControl mb='24px' isInvalid={!!errors.password}>
 								<Label>Senha <Text color={brandStars}>*</Text></Label>
 								<InputGroup size='md'>
@@ -151,12 +154,11 @@ export const Login = () => {
 								</InputGroup>
 								<HelpBlockError name="password" errors={errors} />
 							</FormControl>
+
 							<FormControl>
 								<Flex justifyContent='space-between' align='center' mb='24px'>
 									<FormControl display='flex' alignItems='center'>
-										<Checkbox
-											id='remember-login'
-											me='10px' />
+										<Checkbox id='remember-login' me='10px' />
 										<FormLabel
 											htmlFor='remember-login'
 											mb='0'
