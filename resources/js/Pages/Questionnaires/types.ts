@@ -50,6 +50,9 @@ export declare module QuestionnairesPage {
 				}[],
 			})
 		)[],
+		psychologist: {
+			name: string,
+		}
 		created_at: string,
 	}
 }

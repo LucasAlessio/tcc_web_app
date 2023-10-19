@@ -3,6 +3,9 @@ import { Login } from "@/Pages/Auth/Login";
 import { Home } from "@/Pages/Home";
 import { NotFound } from "@/Pages/NotFound";
 import { Page } from "@/Pages/Page";
+import { ListPatients } from "@/Pages/Patients/List";
+import { PatientsProvider } from "@/Pages/Patients/ProviderPage";
+import { ViewPatient } from "@/Pages/Patients/View";
 import { Profile } from "@/Pages/Profile";
 import { AddPsychologist } from "@/Pages/Psychologists/Add";
 import { EditPsychologist } from "@/Pages/Psychologists/Edit";
@@ -26,7 +29,10 @@ export const AppRoutes = () => {
 						<Route path="adicionar" element={<AddPsychologist />} />
 						<Route path="editar/:id" element={<EditPsychologist />} />
 					</Route>
-					<Route path="pacientes" element={<Page title="Pacientes" startPath="/pacientes">Test 2</Page>} />
+					<Route path="pacientes" element={<PatientsProvider />}>
+						<Route path="" element={<ListPatients />} />
+						<Route path="visualizar/:id" element={<ViewPatient />} />
+					</Route>
 					<Route path="questionarios" element={<QuestionnairesProvider />}>
 						<Route path="" element={<ListQuestionnaires />} />
 						<Route path="adicionar" element={<AddQuestionnaire />} />

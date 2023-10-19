@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PsychologistsController;
@@ -30,6 +31,9 @@ Route::group(['middleware' => 'auth'], function() {
 
 		Route::get('/questionnaires', [QuestionnairesController::class, 'index'])->name('questionnaires.index');
 		Route::get('/questionnaires/{id}', [QuestionnairesController::class, 'edit'])->name('questionnaires.edit');
+
+		Route::get('/patients', [PatientsController::class, 'index'])->name('patients.index');
+		Route::get('/patients/{id}', [PatientsController::class, 'show'])->name('patients.show');
 	});
 
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
 	public function getAll(Collection $filters): object {
-		$query = Questionnaire::query();
+		$query = Questionnaire::query()
+			->with("psychologist");
 
 		if ($filters->has("search")) {
 			$query->where("name", "like", '%' . (string) $filters->get("search") . '%');
@@ -41,7 +42,12 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			$questionnaire = Questionnaire::create($data);
 			
 			foreach($data["questions"] as $key => $question) {
-				$alternatives = $question["alternatives"];
+				$alternatives = array_map(function($value, $key) {
+					return [
+						...$value,
+						"value" => $key,
+					];
+				}, $question["alternatives"], array_keys($question["alternatives"]));
 				
 				/** @var Question */
 				$question = $questionnaire->questions()->create(array_merge($question, [

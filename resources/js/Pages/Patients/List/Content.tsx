@@ -1,18 +1,15 @@
 import { Card } from "@/Components/Card";
 import { FilterContent, ResetFiltersButton } from "@/Components/Filter/FilterContent";
 import { TextInput } from "@/Components/TextInput";
-import { AddIcon, SearchIcon } from "@chakra-ui/icons";
-import { Button, Flex, IconButton, InputGroup, InputRightElement, useToast } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { SearchIcon } from "@chakra-ui/icons";
+import { Flex, IconButton, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { Pagination } from "../../../Components/Pagination";
 import { defaultFilters } from "../ProviderPage";
-import { useQuestionnairesFilters } from "../hooks/useQuestionnairesFilters";
+import { usePatientsFilters } from "../hooks/usePatientsFilters";
 import { TableContent } from "./TableContent";
 
 export const Content = () => {
-	const { form: { register, setValue }, filters, applyFilters } = useQuestionnairesFilters();
-
-	const navigate = useNavigate();
+	const { form: { register, setValue }, filters, applyFilters } = usePatientsFilters();
 
 	return (
 		<>
@@ -29,10 +26,8 @@ export const Content = () => {
 						</InputRightElement>
 					</InputGroup>
 
-					<ResetFiltersPsychologistsButton />
+					<ResetFiltersPatientsButton />
 				</FilterContent>
-
-				<Button variant="brand" onClick={() => navigate("/questionarios/adicionar")} leftIcon={<AddIcon />}>Cadastrar questionário</Button>
 			</Flex>
 
 			<Card>
@@ -49,8 +44,8 @@ export const Content = () => {
 	);
 };
 
-const ResetFiltersPsychologistsButton = () => {
-	const { filters } = useQuestionnairesFilters();
+const ResetFiltersPatientsButton = () => {
+	const { filters } = usePatientsFilters();
 
 	const { limit: appliedLimit, page: appliedPage, ..._appliedFilters } = filters;
 	const { limit: defaultLimit, page: defaultPage, ..._defaultFilters } = defaultFilters;

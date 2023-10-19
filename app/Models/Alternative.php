@@ -17,6 +17,7 @@ class Alternative extends Model
 	 */
 	protected $fillable = [
 		'description',
+		'value'
 	];
 
 	public function question(): BelongsTo

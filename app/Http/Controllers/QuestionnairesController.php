@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionnaireRequest;
 use App\Models\Questionnaire;
-use App\Repositories\EloquentQuestionnairesRepository;
 use App\Repositories\QuestionnairesRepository;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -55,7 +54,7 @@ class QuestionnairesController extends Controller
 	 */
 	public function edit($id)
 	{
-		$questionnaire = $this->repository->getById($id);
+		$questionnaire = $this->repository->getById((int) $id);
 
 		if (!$questionnaire) {
 			throw new NotFoundHttpException("Nenhum registro encontrado");
