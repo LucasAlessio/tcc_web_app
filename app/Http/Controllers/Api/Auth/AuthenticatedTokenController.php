@@ -28,9 +28,6 @@ class AuthenticatedTokenController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		// return Crypt::encrypt(true);
-		return Crypt::decrypt('eyJpdiI6ImhlVitJWHZtZWluYW55UklsMVUwV0E9PSIsInZhbHVlIjoiTXlDMFhxY01WZlUxS2JWakpZYlgzZz09IiwibWFjIjoiMDFhODZjNWU5MDhmOGY1ZmI3ZWNkM2UzYzc0NjcxODYyZDhlNGU1YjEyOTIwMGIwOTc0YWE0YTBmMzQ3MzI4NCIsInRhZyI6IiJ9', true);
-
 		$validated = $request->validate([
 			'email' => ['required', 'email'],
 			'password' => 'required',
