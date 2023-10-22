@@ -4,11 +4,14 @@ namespace App\Repositories;
 
 use App\Enums\QuestionTypeEnum;
 use App\Enums\SystemConfigEnum;
+use App\Enums\UserRole;
 use App\Models\Question;
 use App\Models\Questionnaire;
+use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
@@ -89,9 +92,19 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		}
 	}
 
-	public function getAllFromPatient(): object {
-		$query = Questionnaire::all();
-		return $query;
+	public function getAllFromPatient(int $patientId): object {
+		$user = User::where([
+			'role' => UserRole::PATIENT->value,
+			'id' => $patientId,
+		])->first();
+
+		if (!$user->count()) {
+			throw new NotFoundHttpException('Usuário não encontrado.');
+		}
+
+		$user->with('questionnairesToAnswer');
+
+		return $user->questionnairesToAnswer;
 	}
 
 	private function updateQuestions(Questionnaire $questionnaire, array $questions) {

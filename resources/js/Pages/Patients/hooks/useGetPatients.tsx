@@ -8,7 +8,7 @@ export const useGetPatients = () => {
 	const { filters } = usePatientsFilters();
 
 	return useQuery<PaginatedResult<PatientsPage.Patient>, Error>(
-		["get.Patients", filters],
+		["get.patients", filters],
 		() => http.get(route('patients.index'), {
 			params: filters,
 		})

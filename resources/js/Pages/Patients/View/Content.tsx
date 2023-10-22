@@ -1,81 +1,38 @@
 import { Card } from "@/Components/Card";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
-import { useAuth2 } from "@/Contexts/Auth2";
-import { getDescription as getDescriptionFamilyIncome } from "@/Enums/FamilyIncomeEnum";
-import { GenderEnum, getDescription as getDescriptionGender } from "@/Enums/GenderEnum";
-import { getDescription as getDescriptionMaritalStatus } from "@/Enums/MaritalStatusEnum";
-import { getDescription as getDescriptionSchooling } from "@/Enums/SchoolingEnum";
-import { UserRoleEnum } from "@/Enums/UserRoleEnum";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, FormControl, FormLabel, SimpleGrid, Switch, Tab, TabList, TabPanel, TabPanels, Table, TableContainer, Tabs, Tbody, Td, Text, Tr, useStyleConfig } from "@chakra-ui/react";
-import { MdCheck, MdChecklist, MdClose, MdFemale, MdMale, MdPerson, MdSnippetFolder } from "react-icons/md";
-import { Link, useParams } from "react-router-dom";
-import { useGetPatient } from "../hooks/useGetPatient";
+import useModals from "@/Modals";
+import { Box, Button, FormControl, FormLabel, SimpleGrid, Switch, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useStyleConfig, useToast } from "@chakra-ui/react";
+import { Controller, useForm } from "react-hook-form";
+import { MdChecklist, MdPerson, MdSnippetFolder } from "react-icons/md";
+import { useQueryClient } from "react-query";
+import { useParams } from "react-router-dom";
+import { useGetQuestionnaires } from "../hooks/useGetQuestionnaires";
+import { useSaveQuestionnaires } from "../hooks/useSaveQuestionnaires";
 import { PatientsPage } from "../types";
+import { TabPatient } from "./TabPatient";
 
 export const Content = () => {
 	const { id } = useParams<{ id: string; }>();
-	const { data, isLoading, isSuccess, isError, error } = useGetPatient(id);
 	const { bg } = useStyleConfig('Card');
+
+	const patientId = id ?? "";
 
 	return (
 		<SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
-			<Tabs variant='enclosed'>
-				<TabList px="16px" borderBottom="0">
+			<Tabs variant="soft-rounded">
+				<TabList>
 					<Tab _selected={{ bg }}><MdPerson /> &nbsp; Informações do paciente</Tab>
 					<Tab _selected={{ bg }}><MdChecklist /> &nbsp; Controle de instrumentos</Tab>
 					<Tab _selected={{ bg }}><MdSnippetFolder /> &nbsp; Respostas</Tab>
 				</TabList>
 				<TabPanels>
-					<TabPanel p={0}>
-						<Card>
-							{(() => {
-								if (isLoading) {
-									return <IndeterminatedCircularProgress />;
-								}
-
-								if (isError || !isSuccess) {
-									return <Text>{error?.message ?? "Nenhum registro encontrado"}</Text>;
-								}
-
-								return <Patient {...data} />;
-							})()}
-						</Card>
+					<TabPanel px={0}>
+						<TabPatient id={patientId} />
 					</TabPanel>
-					<TabPanel p={0}>
-						<Card>
-							<Text mb="12px">Selecione os intrumentos a serem disponibilizados para o paciente:</Text>
-
-							<SimpleGrid columns={{ base: 1, sm: 1, md: 2, lg: 3, xl: 4 }}>
-								<FormControl display='flex' alignItems='center' gap="10px" my="10px">
-									<Switch size="lg" isChecked />
-									<FormLabel mb='0' cursor="pointer">
-										DASS-21
-									</FormLabel>
-								</FormControl>
-
-								<FormControl display='flex' alignItems='center' gap="10px" my="10px">
-									<Switch size="lg" isChecked />
-									<FormLabel mb='0' cursor="pointer">
-										PHQ-9
-									</FormLabel>
-								</FormControl>
-
-								<FormControl display='flex' alignItems='center' gap="10px" my="10px">
-									<Switch size="lg" isChecked />
-									<FormLabel mb='0' cursor="pointer">
-										COBRA
-									</FormLabel>
-								</FormControl>
-							</SimpleGrid>
-
-
-							<Box mt="12px">
-								<Button variant="brand" type="submit" loadingText="Salvando">Salvar</Button>
-							</Box>
-						</Card>
+					<TabPanel px={0}>
+						<TabQuestionnaires id={patientId} />
 					</TabPanel>
-					<TabPanel p={0}>
+					<TabPanel px={0}>
 						<Card>
 							// TODO
 						</Card>
@@ -86,63 +43,105 @@ export const Content = () => {
 	);
 };
 
-const Patient = (props: PatientsPage.Patient) => {
-	const { user } = useAuth2();
+const TabQuestionnaires = ({ id }: { id: string }) => {
+	const { data, isLoading, isSuccess, isError, error } = useGetQuestionnaires(id);
 
 	return (
-		<TableContainer>
-			<Table size="md">
-				<Tbody>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Nome</b></Td>
-						<Td>{props.name}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>E-mail</b></Td>
-						<Td>{props.email}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Sexo</b></Td>
-						<Td>
-							<Flex direction="row" align="center" gap="4px">
-								{props.patient.gender == GenderEnum.MALE ? <MdMale display="inline" /> : <MdFemale display="inline" />} {getDescriptionGender(props.patient.gender)}
-							</Flex>
-						</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Ocupação</b></Td>
-						<Td>{props.patient.occupation}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Estado civil</b></Td>
-						<Td>{getDescriptionMaritalStatus(props.patient.marital_status)}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Renda familiar</b></Td>
-						<Td>{getDescriptionFamilyIncome(props.patient.family_income)}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Escolaridade</b></Td>
-						<Td>{getDescriptionSchooling(props.patient.schooling)}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Possui ou tem histórico de doenças crônicas na família</b></Td>
-						<Td>{props.patient.family_with_chronic_illnesses ? <MdCheck style={{ "fontSize": "24px" }} /> : <MdClose style={{ "fontSize": "24px" }} />}</Td>
-					</Tr>
-					<Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Possui ou tem histórico de doenças psiquiátricas na família</b></Td>
-						<Td>{props.patient.family_with_psychiatric_disorders ? <MdCheck style={{ "fontSize": "24px" }} /> : <MdClose fontSize="24px" />}</Td>
-					</Tr>
-					{user?.role == UserRoleEnum.ADMIN && <Tr>
-						<Td isNumeric w={5} whiteSpace="nowrap"><b>Psicólogo</b></Td>
-						<Td>
-							<Link to={`/psicologos/editar/${props.patient.psychologist.id}`} target="_blank">
-								{props.patient.psychologist.name} <ExternalLinkIcon />
-							</Link>
-						</Td>
-					</Tr>}
-				</Tbody>
-			</Table>
-		</TableContainer>
+		<Card>
+			{(() => {
+				if (isLoading) {
+					return <IndeterminatedCircularProgress />;
+				}
+
+				if (isError || !isSuccess) {
+					return <Text>{error?.message ?? "Nenhum registro encontrado"}</Text>;
+				}
+
+				return <FormControls id={id} questionnaires={data} />;
+			})()}
+		</Card>
+	);
+}
+
+const FormControls = ({ id, questionnaires }: { id: string, questionnaires: PatientsPage.QuestionnairesControls }) => {
+	const queryClient = useQueryClient();
+
+	const { handleSubmit, control } = useForm<PatientsPage.QuestionnairesForm>({
+		defaultValues: {
+			questionnaires: questionnaires.map(({ id, active }) => ({
+				id,
+				active,
+			}))
+		},
+	});
+
+	const { mutate, isLoading } = useSaveQuestionnaires(id);
+
+	const { alert } = useModals();
+	const toast = useToast();
+
+	const onSubmit = handleSubmit(formData => {
+		mutate(formData, {
+			onSuccess(response) {
+				queryClient.invalidateQueries({
+					queryKey: ["get.questionnaires.controls", id],
+				});
+
+				toast({
+					title: 'Instrumentos salvos',
+					description: "Os instrumentos foram salvos para o paciente.",
+					status: 'success',
+					duration: 6000,
+					isClosable: true,
+				});
+			},
+			onError(e) {
+				return alert({
+					title: "Ocorreu um erro",
+					message: e.message,
+				});
+			}
+		});
+	});
+
+	return (
+		<form onSubmit={onSubmit}>
+			<Text mb="12px">Selecione os intrumentos a serem disponibilizados para o paciente:</Text>
+
+			<SimpleGrid columns={{ base: 1, sm: 1, md: 2, lg: 3, xl: 4 }}>
+				{questionnaires.map((value, index) => (
+					<FormControl display='flex' alignItems='center' gap="10px" my="10px" key={value.id}>
+						<Controller
+							control={control}
+							name={`questionnaires.${index}.active`}
+							render={({
+								field: { onChange, onBlur, value, name, ref },
+								fieldState: { invalid, isTouched, isDirty, error },
+								formState,
+							}) => (
+								<Switch
+									onBlur={onBlur} // notify when input is touched
+									onChange={onChange} // send value to hook form
+									isChecked={value}
+									ref={ref} />
+							)}
+						/>
+						<FormLabel mb='0' cursor="pointer">
+							{value.name}
+						</FormLabel>
+					</FormControl>
+				))}
+			</SimpleGrid>
+
+			<Box mt="24px">
+				<Button
+					variant="brand"
+					type="submit"
+					loadingText="Salvando"
+					isLoading={isLoading}>
+					Salvar
+				</Button>
+			</Box>
+		</form>
 	);
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PsychologistsController;
 use App\Http\Controllers\QuestionnairesController;
+use App\Http\Controllers\QuestionnairesControlsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 		Route::get('/patients', [PatientsController::class, 'index'])->name('patients.index');
 		Route::get('/patients/{id}', [PatientsController::class, 'show'])->name('patients.show');
+
+		Route::get('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'edit'])->name('questionnaires.controls.edit');
 	});
 
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -45,6 +48,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::post('/questionnaires', [QuestionnairesController::class, 'store'])->name('questionnaires.store');
 	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
+
+	Route::post('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'update'])->name('questionnaires.controls.update');
 });
 
 Route::get('/{path?}', function () {

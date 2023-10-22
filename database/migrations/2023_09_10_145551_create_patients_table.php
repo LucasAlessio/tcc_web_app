@@ -21,8 +21,8 @@ return new class extends Migration
 			$table->boolean('family_with_chronic_illnesses');
 			$table->boolean('family_with_psychiatric_disorders');
 			$table->unsignedBigInteger('user_id', false);
-			$table->foreign('user_id', 'patients_user_id_foreign')->references('id')->on('users');
 			$table->unsignedBigInteger('psychologist_id', false);
+			$table->foreign('user_id', 'patients_user_id_foreign')->references('id')->on('users');
 			$table->foreign('psychologist_id', 'patients_psychologist_id_foreign')->references('id')->on('users');
 			$table->timestamps();
 		});

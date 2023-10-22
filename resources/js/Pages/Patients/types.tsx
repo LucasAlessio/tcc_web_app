@@ -33,4 +33,17 @@ export declare module PatientsPage {
 			};
 		};
 	}
+
+	type QuestionnairesControls = {
+		id: number,
+		name: string,
+		active: boolean,
+	}[];
+
+	type QuestionnairesForm = {
+		questionnaires: {
+			id: number,
+			active: boolean,
+		}[],
+	}
 }
