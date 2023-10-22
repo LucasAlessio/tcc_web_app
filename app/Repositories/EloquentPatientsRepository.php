@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\SystemConfigEnum;
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,14 @@ class EloquentPatientsRepository implements PatientsRepository {
 			->with("patient.psychologist");
 
 		if (!empty($filters->has("search"))) {
-			$query
-				->where("name", "like", '%' . (string) $filters->get("search") . '%')
-				->orWhereHas('patient.psychologist' , function($query) use($filters) {
-					$query->where('name', 'like', '%' . (string) $filters->get("search") . '%');
-				});
+			$query->where(function(Builder $query) use($filters) {
+				$query
+					->where("name", "like", '%' . (string) $filters->get("search") . '%')
+					->orWhere("email", "like", '%' . (string) $filters->get("search") . '%')
+					->orWhereHas('patient.psychologist' , function(Builder $query) use($filters) {
+						$query->where('name', 'like', '%' . (string) $filters->get("search") . '%');
+					});
+			});
 		}
 
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
