@@ -18,7 +18,7 @@ export const TableContent = () => {
 				<Thead>
 					<Tr>
 						<Th>Nome</Th>
-						<Th>E-mail</Th>
+						<Th>Descrição</Th>
 						<Th>Criado por</Th>
 						<Th>Criado em</Th>
 						<Th w="120px">Ações</Th>
