@@ -19,7 +19,7 @@ export const LoaderPage = () => {
 			backgroundColor={bgColor}>
 			<Head title="Carregando..." />
 
-			<Image src={appLogo} title="Universidade de Caxias do Sul" height="95px" mb="40px" />
+			<Image src={appLogo} title="Serene" height="50px" mb="40px" />
 			<Progress size='xs' isIndeterminate w="100px" />
 		</Flex>
 	);

@@ -4,12 +4,7 @@ import { useAuth2 } from "@/Contexts/Auth2";
 import AuthTemplate from "@/Layouts/AuthTemplate";
 import useModals from "@/Modals";
 import { isValidationException } from "@/types/utils";
-import {
-	Alert, AlertIcon, Box, Button, Checkbox, Flex, FormControl,
-	FormLabel, Heading, Icon, Image, InputGroup,
-	InputRightElement, Text,
-	useColorModeValue
-} from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Image, InputGroup, InputRightElement, Text, useColorModeValue } from "@chakra-ui/react";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
 import { FormProvider, Path, useForm } from "react-hook-form";
@@ -18,8 +13,6 @@ import { RiEyeCloseLine } from "react-icons/ri";
 import { NavLink, Navigate, useNavigate } from "react-router-dom";
 import Logo from '../../../img/display/logo.png';
 import NegativeLogo from '../../../img/display/logo_negative.png';
-import ClinicalCenterLogo from '../../../img/display/logo_clinical_center.png';
-import NegativeClinicalCenterLogo from '../../../img/display/logo_negative_clinical_center.png';
 import { HelpBlockError } from "../../Components/HelpBlockError";
 import { LoaderPage } from "../Loading";
 
@@ -36,7 +29,6 @@ export const Login = () => {
 	const textColorBrand = useColorModeValue("brand.500", "white");
 	const brandStars = useColorModeValue("brand.500", "brand.400");
 	const appLogo = useColorModeValue(Logo, NegativeLogo);
-	const clinicalCenterLogo = useColorModeValue(ClinicalCenterLogo, NegativeClinicalCenterLogo);
 
 	const [show, setShow] = useState(false);
 
@@ -103,11 +95,10 @@ export const Login = () => {
 
 						<Flex mb="24px"
 							w="100%"
-							justifyContent="space-evenly"
+							justifyContent="flex-start"
 							alignItems="center"
 							direction={{ base: "column", sm: "row" }}>
-							<Image src={appLogo} title="Universidade de Caxias do Sul" height="65px" />
-							<Image src={clinicalCenterLogo} title="Centro Clínico - UCS" height="65px" />
+							<Image src={appLogo} title="Serene" height="65px" />
 						</Flex>
 
 						<Box me='auto'>
