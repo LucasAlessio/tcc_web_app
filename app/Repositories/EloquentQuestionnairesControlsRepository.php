@@ -8,32 +8,38 @@ use App\Models\User;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use stdClass;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentQuestionnairesControlsRepository implements QuestionnairesControlsRepository {
 
 	public function getAll(int $patientId): object
 	{
-		return Questionnaire::join('users', function(JoinClause $join) {
-			$join
-				->on('users.id', '=', 'questionnaires.user_id')
-				->where([
-					'users.role' => UserRole::PSYCHOLOGIST->value,
-				]);
-		})->join('patients', function(JoinClause $join) use($patientId) {
-			$join
-				->on('patients.psychologist_id', '=', 'users.id')
-				->where([
-					'patients.user_id' => $patientId,
-				]);
-		})->leftJoin('patients_questionnaires', function(JoinClause $join) use($patientId) {
-			$join
-				->on('patients_questionnaires.questionnaire_id', '=', 'questionnaires.id')
-				->where('patients_questionnaires.user_id', '=', $patientId);
-		})->get([
-			'questionnaires.id',
-			'questionnaires.name',
-			DB::Raw('IF(`patients_questionnaires`.`user_id` IS NULL, false, true) AS `active`'),
-		]);
+		return Questionnaire::query()
+			->join('users', function(JoinClause $join) {
+				$join
+					->on('users.id', '=', 'questionnaires.user_id')
+					->where([
+						'users.role' => UserRole::PSYCHOLOGIST->value,
+					]);
+			})
+			->join('patients', function(JoinClause $join) use($patientId) {
+				$join
+					->on('patients.psychologist_id', '=', 'users.id')
+					->where([
+						'patients.user_id' => $patientId,
+					]);
+			})
+			->leftJoin('patients_questionnaires', function(JoinClause $join) use($patientId) {
+				$join
+					->on('patients_questionnaires.questionnaire_id', '=', 'questionnaires.id')
+					->where('patients_questionnaires.user_id', '=', $patientId);
+			})
+			->orderBy('questionnaires.id', 'ASC')
+			->get([
+				'questionnaires.id',
+				'questionnaires.name',
+				DB::Raw('IF(`patients_questionnaires`.`user_id` IS NULL, false, true) AS `active`'),
+			]);
 	}
 
 	public function update(int $id, array $data): void
@@ -46,18 +52,18 @@ class EloquentQuestionnairesControlsRepository implements QuestionnairesControls
 			return $carry;
 		}, []);
 
-		try {
-			DB::beginTransaction();
+		$user = User::query()
+			->where([
+				'role' => UserRole::PATIENT->value,
+				'id' => $id,
+			])
+			->first();
 
-			$user = User::find($id);
-			$user->questionnairesToAnswer()->sync($questionnaires, $detach = true);
-
-			DB::commit();
-		} catch (\Exception $e) {
-			DB::rollBack();
-
-			throw $e;
+		if (!$user) {
+			throw new NotFoundHttpException('Nenhum paciente foi encontrado.');
 		}
+
+		$user->questionnairesToAnswer()->sync($questionnaires, $detach = true);
 	}
 
 }

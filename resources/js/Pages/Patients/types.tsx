@@ -1,6 +1,7 @@
 import { FamilyIncomeEnum } from "@/Enums/FamilyIncomeEnum";
 import { GenderEnum } from "@/Enums/GenderEnum";
 import { MaritalStatusEnum } from "@/Enums/MaritalStatusEnum";
+import { QuestionTypeEnum } from "@/Enums/QuestionTypeEnum";
 import { SchoolingEnum } from "@/Enums/SchoolingEnum";
 import { ValuesOf } from "@/types";
 
@@ -46,4 +47,50 @@ export declare module PatientsPage {
 			active: boolean,
 		}[],
 	}
+
+	type AnswersGroups = {
+		id: number,
+		psycholigist_comment?: string,
+		created_at: string,
+		updated_at: string,
+		questionnaire: {
+			id: number,
+			name: string,
+		},
+	}[];
+
+	type AnswersGroup = {
+		id: number,
+		created_at: string,
+		questionnaire: {
+			id: number,
+			name: string,
+		},
+		answers: ({
+			id: number,
+		} & ({
+			comment: string,
+			question: {
+				id: number,
+				description: string,
+				type: typeof QuestionTypeEnum.SHORT_TEXT | typeof QuestionTypeEnum.LONG_TEXT,
+			},
+			alternative: undefined,
+		} | {
+			comment: undefined,
+			question: {
+				id: number,
+				description: string,
+				type: typeof QuestionTypeEnum.CHOICE | typeof QuestionTypeEnum.MULTIPLE_CHOICE,
+			},
+			alternative: {
+				id: number,
+				description: string,
+				value: number,
+				question_id: number,
+				created_at: string,
+				updated_at: string,
+			},
+		}))[],
+	};
 }

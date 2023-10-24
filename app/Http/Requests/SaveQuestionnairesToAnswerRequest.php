@@ -37,7 +37,7 @@ class SaveQuestionnairesToAnswerRequest extends FormRequest
 		])->first();
 
 		if (!$user) {
-			throw new NotFoundHttpException('Paciente não localizado');
+			throw new NotFoundHttpException('Nenhum paciente foi encontrado.');
 		}
 
 		return [

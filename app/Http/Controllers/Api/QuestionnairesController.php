@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\QuestionnairesRepository;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionnairesController extends Controller
 {
@@ -20,7 +18,38 @@ class QuestionnairesController extends Controller
 	 */
 	public function index()
 	{
-		return $this->repository->getAllFromPatient();
+		$questionnaires = $this->repository->getAllFromPatient(Auth::user()->id);
+
+		return $questionnaires->map(function($value) {
+			$questionnaire = $value->toArray();
+
+			if (!$questionnaire["answerd_at"]) {
+				return [
+					...$questionnaire,
+					"disabled" => false,
+					"disabled_until" => null,
+	
+				];
+			}
+
+			$nextAnswer = Carbon::parse($questionnaire["answerd_at"]);
+			$nextAnswer->addDays($questionnaire["recurrence"]);
+
+			$disabled = time() < $nextAnswer->timestamp;
+			$disabledUntil = null;
+
+			if ($disabled) {
+				$nextAnswer->ceilDay();
+				$disabledUntil = $nextAnswer->format(\DateTime::ATOM);
+			}
+
+			return [
+				...$questionnaire,
+				"disabled" => $disabled,
+				"disabled_until" => $disabledUntil,
+
+			];
+		});
 	}
 
 	/**
@@ -28,6 +57,12 @@ class QuestionnairesController extends Controller
 	 */
 	public function show($id)
 	{
-		return $this->repository->getById((int) $id);
+		$questionnaire = $this->repository->getById((int) $id);
+
+		return [
+			...$questionnaire->toArray(),
+			// "disabled" => true,
+			// 	"disabled_until" => (new DateTime())->format(DateTime::ATOM),
+		];
 	}
 }

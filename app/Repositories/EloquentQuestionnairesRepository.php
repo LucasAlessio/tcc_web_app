@@ -8,6 +8,8 @@ use App\Enums\UserRole;
 use App\Models\Question;
 use App\Models\Questionnaire;
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -93,18 +95,33 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 	}
 
 	public function getAllFromPatient(int $patientId): object {
-		$user = User::where([
-			'role' => UserRole::PATIENT->value,
-			'id' => $patientId,
-		])->first();
-
-		if (!$user->count()) {
-			throw new NotFoundHttpException('Usuário não encontrado.');
-		}
-
-		$user->with('questionnairesToAnswer');
-
-		return $user->questionnairesToAnswer;
+		return Questionnaire::query()
+			->join('patients_questionnaires', function(JoinClause $join) use($patientId) {
+				$join
+					->on('patients_questionnaires.questionnaire_id', '=', 'questionnaires.id')
+					->where('patients_questionnaires.user_id', '=', $patientId);
+			})
+			->leftJoin('answers_groups', function(JoinClause $join) {
+				$join
+					->on('answers_groups.questionnaire_id', '=', 'questionnaires.id')
+					->on('answers_groups.user_id', '=', 'patients_questionnaires.user_id')
+					->where('answers_groups.id', '=', function(Builder $query) {
+						$query->select('id')
+							->from('answers_groups')
+							->whereColumn('answers_groups.questionnaire_id', '=', 'questionnaires.id')
+							->whereColumn('answers_groups.user_id', '=', 'patients_questionnaires.user_id')
+							->orderBy('created_at', 'DESC')
+							->limit(1);
+					});
+			})
+			->orderBy('questionnaires.id', 'ASC')
+			->withCasts([
+				'answers_groups.created_at' => 'datetime'
+			])
+			->get([
+				'questionnaires.*',
+				'answers_groups.created_at as answerd_at'
+			]);
 	}
 
 	private function updateQuestions(Questionnaire $questionnaire, array $questions) {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswersGroupsController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
@@ -37,6 +38,9 @@ Route::group(['middleware' => 'auth'], function() {
 		Route::get('/patients/{id}', [PatientsController::class, 'show'])->name('patients.show');
 
 		Route::get('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'edit'])->name('questionnaires.controls.edit');
+
+		Route::get('/answers-groups/{id}', [AnswersGroupsController::class, 'index'])->name('answers.groups.index');
+		Route::get('/answers-group/{id}', [AnswersGroupsController::class, 'show'])->name('answers.groups.show');
 	});
 
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
