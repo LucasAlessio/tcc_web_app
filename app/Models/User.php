@@ -63,6 +63,11 @@ class User extends Authenticatable
 		return $this->hasOne(Patient::class, 'user_id');
 	}
 
+	// public function patients(): HasMany
+	// {
+	// 	return $this->hasMany(Patient::class, 'psychologist_id');
+	// }
+
 	public function questionnairesToAnswer(): BelongsToMany
 	{
 		return $this->belongsToMany(Questionnaire::class, 'patients_questionnaires', 'user_id', 'questionnaire_id')->withTimestamps();

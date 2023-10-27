@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 // use Inertia\Response;
 
 class ProfileController extends Controller
@@ -30,15 +27,35 @@ class ProfileController extends Controller
 	 */
 	public function update(ProfileUpdateRequest $request)
 	{
-		$request->user()->fill($request->validated());
+		$user = $request->user();
+		$user->fill($request->validated());
 
-		if ($request->user()->isDirty('email')) {
-			$request->user()->email_verified_at = null;
+		
+		if ($user->isDirty('email')) {
+			$user->email_verified_at = null;
 		}
+		
+		try {
+			DB::beginTransaction();
 
-		$request->user()->save();
+			$user->save();
+			
+			if ($user->role == UserRole::PSYCHOLOGIST->value) {
+				$user->psychologist()->updateOrCreate([], $request->validated()["psychologist"]);
+			}
 
-		return $request->user();
+			DB::commit();
+
+			if ($user->role != UserRole::PSYCHOLOGIST->value) {
+				return $user;
+			}
+			
+			return $user->load('psychologist');
+		} catch (\Exception $e) {
+			DB::rollBack();
+
+			throw $e;
+		}
 	}
 
 	/**

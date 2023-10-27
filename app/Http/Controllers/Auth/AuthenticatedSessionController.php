@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
@@ -16,9 +17,15 @@ class AuthenticatedSessionController extends Controller
 	 * Get indentity
 	 */
 	public function index(Request $request): array {
+		$user = $request->user();
+
+		if ($user->role == UserRole::PSYCHOLOGIST->value) {
+			$user->load('psychologist');
+		}
+
 		return [
 			'auth' => [
-				'user' => $request->user(),
+				'user' => $user,
 			],
 		];
 	}

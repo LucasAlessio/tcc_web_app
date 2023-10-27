@@ -8,20 +8,21 @@ import { isValidationException } from "@/types/utils";
 import { Box, Button, FormControl, SimpleGrid, Text, useColorModeValue, useToast } from "@chakra-ui/react";
 import { Path, useForm } from "react-hook-form";
 import { useSalvarInformacoesPerfil } from "./hooks/useSalvarInformacoesPerfil";
+import { UserRoleEnum } from "@/Enums/UserRoleEnum";
 
 type TForm = {
 	name: string,
 	email: string,
+	psychologist: {
+		registration_number: string,
+	}
 }
 
 export const ProfileInformation = () => {
 	const { user, setUser } = useAuth2();
 
 	const { register, handleSubmit, formState: { errors }, setError } = useForm<TForm>({
-		defaultValues: {
-			name: user?.name,
-			email: user?.email,
-		}
+		defaultValues: user ?? {},
 	});
 	const { mutate, isLoading } = useSalvarInformacoesPerfil();
 	const { alert } = useModals();
@@ -88,6 +89,14 @@ export const ProfileInformation = () => {
 							<HelpBlockError name="email" errors={errors} />
 						</FormControl>
 					</SimpleGrid>
+
+					{user?.role == UserRoleEnum.PSYCHOLOGIST && <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }}>
+						<FormControl mb='12px' isInvalid={!!errors.psychologist?.registration_number}>
+							<Label>Número de registro</Label>
+							<TextInput {...register("psychologist.registration_number")} placeholder="Número de registro" />
+							<HelpBlockError name="psychologist.registration_number" errors={errors} />
+						</FormControl>
+					</SimpleGrid>}
 
 					<Box mt="12px">
 						<Button variant="brand" type="submit" isLoading={isLoading} loadingText='Salvando'>Salvar</Button>
