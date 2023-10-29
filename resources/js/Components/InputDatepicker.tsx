@@ -45,7 +45,7 @@ export const InputDatepicker = ({ value, onChange, onBlur }: InputDatepickerProp
 									{isOpen && (
 										<Calendar
 											onChange={(value) => {
-												onChange(date2br(value?.toString() ?? ""));
+												onChange(date2br(value?.toString() ?? "") ?? "");
 												onClose();
 											}}
 											minDetail="year"

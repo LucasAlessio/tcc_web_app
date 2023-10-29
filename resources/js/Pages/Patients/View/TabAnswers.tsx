@@ -54,7 +54,7 @@ const Groups = ({ groups }: { groups: PatientsPage.AnswersGroups; }) => {
 					group={value.id}
 					active={viewing && group == value.id}
 					title={value.questionnaire.name}
-					subtitle={date2br(value.created_at)} />
+					subtitle={date2br(value.created_at) ?? ""} />
 			))}
 		</>
 	);

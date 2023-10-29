@@ -10,17 +10,17 @@ import { ValuesOf } from "@/types";
 import { Alternative } from "./Alternative";
 
 type QuestionProps = {
-	field: FieldArrayWithId<QuestionnairesPage.TAddForm, "questions", "_id">;
+	field: FieldArrayWithId<QuestionnairesPage.TForm, "questions", "_id">;
 	questionIndex: number;
 	handleClone: (event: React.MouseEvent<HTMLButtonElement>) => void;
 	handleRemove: (event: React.MouseEvent<HTMLButtonElement>) => void;
-	handleUpdate: (data: QuestionnairesPage.TAddForm["questions"][number]) => void;
+	handleUpdate: (data: QuestionnairesPage.TForm["questions"][number]) => void;
 	handleMoveUp?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 	handleMoveDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const Question = ({ field, questionIndex, handleClone, handleRemove, handleUpdate, handleMoveUp, handleMoveDown }: QuestionProps) => {
-	const { register, formState: { errors }, control, getValues, clearErrors } = useFormContext<QuestionnairesPage.TAddForm>();
+	const { register, formState: { errors }, control, getValues, clearErrors } = useFormContext<QuestionnairesPage.TForm>();
 	const { fields, append, remove, update } = useFieldArray({
 		control,
 		name: `questions.${questionIndex}.alternatives`,

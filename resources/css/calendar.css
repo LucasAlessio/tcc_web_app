@@ -28,6 +28,10 @@ abbr[title] {
 	text-decoration: unset !important;
 }
 
+.react-calendar__navigation button:disabled {
+	background-color: transparent;
+}
+
 .react-calendar__navigation__prev-button {
 	background-color: #4318ff !important;
 	border-radius: 10px;

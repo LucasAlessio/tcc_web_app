@@ -4,7 +4,7 @@ import { ValidationError } from "yup";
 import { QuestionnairesPage } from "../types";
 
 export const useCreateQuestionnaire = () => {
-	return useMutation<boolean, ValidationError | Error, QuestionnairesPage.TAddForm>({
+	return useMutation<boolean, ValidationError | Error, QuestionnairesPage.TForm>({
 		mutationKey: ['create.questionnaire'],
 		mutationFn: (data) => http.post(route('questionnaires.store'), { ...data }),
 	});

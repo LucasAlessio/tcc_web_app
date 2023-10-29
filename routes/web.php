@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnswersGroupsController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ExportAnswersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PsychologistsController;
 use App\Http\Controllers\QuestionnairesController;
@@ -54,6 +55,9 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
 
 	Route::post('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'update'])->name('questionnaires.controls.update');
+
+	Route::post('/export-answers', [ExportAnswersController::class, 'store'])->name('export.answers.store');
+	Route::get('/export-answers', [ExportAnswersController::class, 'show'])->name('export.answers.show');
 });
 
 Route::get('/{path?}', function () {

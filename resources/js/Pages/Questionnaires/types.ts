@@ -7,7 +7,7 @@ export declare module QuestionnairesPage {
 		limit: number,
 	}
 
-	type TAddForm = {
+	type TForm = {
 		name: string,
 		description: string,
 		recurrence: string,
@@ -54,5 +54,14 @@ export declare module QuestionnairesPage {
 			name: string,
 		}
 		created_at: string,
+	}
+
+	type TExportForm = {
+		id: number,
+		startDate: string,
+		endDate: string,
+		responsesQuantity: number,
+		format: "rows" | "columns",
+		withPatientsData: boolean
 	}
 }

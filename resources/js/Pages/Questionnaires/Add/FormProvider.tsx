@@ -8,7 +8,7 @@ import { useCreateQuestionnaire } from "../hooks/useCreateQuestionnaire";
 import { QuestionnairesPage } from "../types";
 
 export const FormProvider = () => {
-	const form = useForm<QuestionnairesPage.TAddForm>({
+	const form = useForm<QuestionnairesPage.TForm>({
 		defaultValues: {
 			name: "",
 			description: "",
@@ -23,7 +23,7 @@ export const FormProvider = () => {
 	const { alert } = useModals();
 	const toast = useToast();
 
-	const handleSubmit = (formData: QuestionnairesPage.TAddForm) => {
+	const handleSubmit = (formData: QuestionnairesPage.TForm) => {
 		mutate(formData, {
 			onSuccess(response) {
 				toast({
@@ -39,7 +39,7 @@ export const FormProvider = () => {
 			onError(e) {
 				if (isValidationException(e)) {
 					Object.entries(e.errors).map(([field, errors]) => {
-						form.setError(field as Path<QuestionnairesPage.TAddForm>, {
+						form.setError(field as Path<QuestionnairesPage.TForm>, {
 							message: errors[0],
 							type: "validate",
 						});

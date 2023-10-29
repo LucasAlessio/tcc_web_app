@@ -10,11 +10,11 @@ import { Question } from "./Question";
 
 type FormProps = {
 	isSubmitting: boolean
-	onSubmit: SubmitHandler<QuestionnairesPage.TAddForm>
+	onSubmit: SubmitHandler<QuestionnairesPage.TForm>
 }
 
 export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
-	const { register, handleSubmit, formState: { errors }, control, clearErrors, getValues } = useFormContext<QuestionnairesPage.TAddForm>();
+	const { register, handleSubmit, formState: { errors }, control, clearErrors, getValues } = useFormContext<QuestionnairesPage.TForm>();
 	const { fields, append, insert, remove, update, swap } = useFieldArray({
 		control,
 		name: "questions",
@@ -48,7 +48,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 	};
 
 	const handleUpdateQuestion = (index: number) => {
-		return (data: QuestionnairesPage.TAddForm["questions"][number]) => {
+		return (data: QuestionnairesPage.TForm["questions"][number]) => {
 			update(index, data);
 		};
 	};

@@ -3,14 +3,17 @@ import { HelpBlockError } from "@/Components/HelpBlockError";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
 import { InputDatepicker } from "@/Components/InputDatepicker";
 import { Label } from "@/Components/Label";
-import { Box, Button, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react";
-import { Controller, useForm } from "react-hook-form";
+import { Box, Button, Flex, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, Toast, useToast } from "@chakra-ui/react";
+import { Controller, Path, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useGetQuestionnaire } from "../hooks/useGetQuestionnaire";
 import { QuestionnairesPage } from "../types";
 
 import 'react-calendar/dist/Calendar.css';
 import '../../../../css/calendar.css';
+import { useExportAnswers } from "../hooks/useExportAnswers";
+import { isValidationException } from "@/types/utils";
+import { br2intl } from "@/utils/date";
 
 export const Content = () => {
 	const { id } = useParams<{ id: string; }>();
@@ -35,17 +38,10 @@ export const Content = () => {
 	);
 };
 
-type ExportFilters = {
-	startDate: string,
-	endDate: string,
-	responsesQuantity: number,
-	format: "rows" | "columns",
-	withPatientsData: boolean
-}
-
-const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
-	const { register, control, formState: { errors }, handleSubmit } = useForm<ExportFilters>({
+const FormFilters = ({ id, name }: QuestionnairesPage.Questionnaire) => {
+	const { register, control, setError, handleSubmit, formState: { errors } } = useForm<QuestionnairesPage.TExportForm>({
 		defaultValues: {
+			id: id,
 			startDate: "",
 			endDate: "",
 			responsesQuantity: 1,
@@ -54,8 +50,47 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 		},
 	});
 
+	const { mutate, isLoading } = useExportAnswers();
+	const toast = useToast();
+
 	const submit = handleSubmit(formData => {
-		console.log(formData);
+		mutate({
+			...formData,
+			startDate: br2intl(formData.startDate) ?? "",
+			endDate: br2intl(formData.endDate) ?? "",
+		}, {
+			onSuccess(response) {
+				if (!response.length) {
+					toast({
+						title: 'Sem resultados',
+						description: "Não foram encontrados resultados para exportar.",
+						status: 'warning',
+						duration: 6000,
+						isClosable: true,
+					});
+					return;
+				}
+
+				window.open(route('export.answers.show') + `?name=${response}`, '_blank');
+			},
+			onError(e) {
+				if (isValidationException(e)) {
+					Object.entries(e.errors).map(([field, errors]) => {
+						setError(field as Path<QuestionnairesPage.TExportForm>, {
+							message: errors[0],
+							type: "validate",
+						});
+					});
+
+					return;
+				}
+
+				return alert({
+					title: "Ocorreu um erro",
+					message: e.message,
+				});
+			}
+		});
 	});
 
 	return (
@@ -63,7 +98,7 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 			<Text as="h2" fontSize="18px" fontWeight="bold">Questionário: {name}</Text>
 
 			<SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} gap="12px" mt="24px" position="relative" zIndex="10">
-				<FormControl mb='12px' isInvalid={false} position="relative" zIndex="10">
+				<FormControl mb='12px' position="relative" zIndex="10" isInvalid={!!errors.startDate}>
 					<Label>Data de início</Label>
 
 					<Controller
@@ -71,13 +106,12 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 						name="startDate"
 						render={({
 							field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
-						}) => (
-							<InputDatepicker value={value} onChange={onChange} onBlur={onBlur} />
-						)} />
-					<HelpBlockError name="endDate" errors={errors} />
+						}) => <InputDatepicker value={value} onChange={onChange} onBlur={onBlur} />}
+					/>
+					<HelpBlockError name="startDate" errors={errors} />
 				</FormControl>
 
-				<FormControl mb='12px' isInvalid={false}>
+				<FormControl mb='12px' isInvalid={!!errors.endDate}>
 					<Label>Data de fim</Label>
 
 					<Controller
@@ -87,26 +121,26 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 							field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
 						}) => <InputDatepicker value={value} onChange={onChange} onBlur={onBlur} />}
 					/>
-					<HelpBlockError name="startDate" errors={errors} />
+					<HelpBlockError name="endDate" errors={errors} />
 				</FormControl>
 			</SimpleGrid>
 
 			<SimpleGrid mt="12px" columns={{ base: 1, md: 2, xl: 2 }}>
-				<FormControl mb='12px'>
+				<FormControl mb='12px' isInvalid={!!errors.responsesQuantity}>
 					<Label>Vezes que o paciente deve ter respondido o questionário:</Label>
-					<NumberInput variant="main" min={1} max={1000} maxW="200px">
+					<NumberInput variant="main" min={0} max={1000} maxW="200px">
 						<NumberInputField {...register("responsesQuantity")} placeholder="Vezes que o paciente respondeu" />
 						<NumberInputStepper>
 							<NumberIncrementStepper />
 							<NumberDecrementStepper />
 						</NumberInputStepper>
 					</NumberInput>
-					<HelpBlockError name="quantityResponses" errors={errors} />
+					<HelpBlockError name="responsesQuantity" errors={errors} />
 				</FormControl>
 			</SimpleGrid>
 
-			<SimpleGrid mt="12px" columns={{ base: 1, md: 2, xl: 4 }} gap="12px">
-				<FormControl mb='12px' isInvalid={false}>
+			<SimpleGrid mt="12px" columns={{ base: 1 }} gap="12px">
+				<FormControl mb='12px' isInvalid={!!errors.format}>
 					<Label>Forma de exportação</Label>
 					<Controller
 						control={control}
@@ -114,7 +148,7 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 						render={({
 							field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
 						}) => (
-							<RadioGroup onChange={onChange as (event: ExportFilters["format"]) => void} value={value} size="lg">
+							<RadioGroup onChange={onChange as (event: QuestionnairesPage.TExportForm["format"]) => void} value={value} size="lg">
 								<Stack direction="column">
 									<Radio value="columns">Um paciente por linha</Radio>
 									<Radio value="rows">Mais de um paciente por linha</Radio>
@@ -125,21 +159,24 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 				</FormControl>
 			</SimpleGrid>
 
-			<SimpleGrid columns={{ base: 1, sm: 1, md: 2, lg: 3, xl: 4 }} mt="12px">
-				<FormControl flexDirection="row" display="flex" alignItems="center" justifyContent="flex-start" gap="12px">
-					<Controller
-						control={control}
-						name="withPatientsData"
-						render={({
-							field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
-						}) => (
-							<Switch
-								onBlur={onBlur} // notify when input is touched
-								onChange={onChange} // send value to hook form
-								isChecked={value}
-								ref={ref} />
-						)} />
-					<FormLabel mb='0' cursor="pointer">Incluir informações do paciente</FormLabel>
+			<SimpleGrid columns={{ base: 1 }} mt="12px">
+				<FormControl isInvalid={!!errors.withPatientsData}>
+					<Flex flexDirection="row" display="flex" alignItems="center" justifyContent="flex-start" gap="12px">
+						<Controller
+							control={control}
+							name="withPatientsData"
+							render={({
+								field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
+							}) => (
+								<Switch
+									onBlur={onBlur} // notify when input is touched
+									onChange={onChange} // send value to hook form
+									isChecked={value}
+									ref={ref} />
+							)} />
+						<FormLabel mb='0' cursor="pointer" w="100%">Incluir informações do paciente</FormLabel>
+					</Flex>
+					<HelpBlockError name="withPatientsData" errors={errors} />
 				</FormControl>
 			</SimpleGrid>
 
@@ -147,9 +184,9 @@ const FormFilters = ({ name }: QuestionnairesPage.Questionnaire) => {
 				<Button
 					variant="brand"
 					type="submit"
-					loadingText="Salvando"
-					isLoading={false}>
-					Salvar
+					loadingText="Gerando arquivo"
+					isLoading={isLoading}>
+					Exportar
 				</Button>
 			</Box>
 		</form>

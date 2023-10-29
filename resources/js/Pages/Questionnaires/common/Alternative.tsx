@@ -13,7 +13,7 @@ type AlternativeProps = {
 };
 
 export const Alternative = ({ questionIndex, alternativeIndex, handleRemove }: AlternativeProps) => {
-	const { register, formState: { errors } } = useFormContext<QuestionnairesPage.TAddForm>();
+	const { register, formState: { errors } } = useFormContext<QuestionnairesPage.TForm>();
 
 	return (
 		<Box width={{ base: "100%", md: "50%", lg: "25%" }} px="6px">

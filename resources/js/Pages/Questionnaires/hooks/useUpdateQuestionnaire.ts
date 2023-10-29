@@ -4,7 +4,7 @@ import { useMutation } from "react-query";
 import { ValidationError } from "yup";
 
 export const useUpdateQuestionnaire = (id: string | number) => {
-	return useMutation<boolean, ValidationError | Error, QuestionnairesPage.TAddForm>({
+	return useMutation<boolean, ValidationError | Error, QuestionnairesPage.TForm>({
 		mutationKey: ['update.questionnaire'],
 		mutationFn: (data) => http.put(route('questionnaires.update', id), { ...data }),
 	});
