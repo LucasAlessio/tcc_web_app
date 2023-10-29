@@ -13,6 +13,7 @@ import { ListPsychologists } from "@/Pages/Psychologists/List";
 import { PsychologistsProvider } from "@/Pages/Psychologists/ProviderPage";
 import { AddQuestionnaire } from "@/Pages/Questionnaires/Add";
 import { EditQuestionnaire } from "@/Pages/Questionnaires/Edit";
+import { ExportQuestionnaire } from "@/Pages/Questionnaires/Export";
 import { ListQuestionnaires } from "@/Pages/Questionnaires/List";
 import { QuestionnairesProvider } from "@/Pages/Questionnaires/ProviderPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -37,6 +38,7 @@ export const AppRoutes = () => {
 						<Route path="" element={<ListQuestionnaires />} />
 						<Route path="adicionar" element={<AddQuestionnaire />} />
 						<Route path="editar/:id" element={<EditQuestionnaire />} />
+						<Route path="exportar/:id" element={<ExportQuestionnaire />} />
 					</Route>
 					<Route path="perfil" element={<Profile />} />
 					<Route path="/*" element={<Page title="" startPath="/home"><NotFound /></Page>} />

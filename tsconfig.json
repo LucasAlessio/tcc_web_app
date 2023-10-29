@@ -12,7 +12,8 @@
         "forceConsistentCasingInFileNames": true,
         "noEmit": true,
         "paths": {
-            "@/*": ["./resources/js/*"]
+            "@/*": ["./resources/js/*"],
+            "@css/*": ["./resources/css/*"]
         },
         "skipLibCheck": true
     },

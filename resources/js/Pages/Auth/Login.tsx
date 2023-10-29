@@ -147,7 +147,7 @@ export const Login = () => {
 							</FormControl>
 
 							<FormControl>
-								<Flex justifyContent='space-between' align='center' mb='24px'>
+								{/* <Flex justifyContent='space-between' align='center' mb='24px'>
 									<FormControl display='flex' alignItems='center'>
 										<Checkbox id='remember-login' me='10px' />
 										<FormLabel
@@ -169,7 +169,7 @@ export const Login = () => {
 											Esqueci minha senha
 										</Text>
 									</NavLink>
-								</Flex>
+								</Flex> */}
 
 								{errors.root?.login && (
 									<Alert status='error' variant='left-accent' mb="24px">
@@ -185,7 +185,7 @@ export const Login = () => {
 									fontWeight='500'
 									w='100%'
 									h='50'
-									mb='24px'
+									my='24px'
 									isLoading={isLoading}>
 									Entrar
 								</Button>

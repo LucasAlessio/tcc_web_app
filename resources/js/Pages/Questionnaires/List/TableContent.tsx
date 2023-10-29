@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons";
 import { IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import { useGetQuestionnaires } from "../hooks/useGetQuestionnaires";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
@@ -59,11 +59,19 @@ export const TableContent = () => {
 									<Td>{value.psychologist.name}</Td>
 									<Td>{date2br(value.created_at)}</Td>
 									<Td w="120px">
+										<Tooltip label="Exportar respostas" hasArrow placement="top">
+											<IconButton
+												as={Link}
+												to={`/questionarios/exportar/${value.id}`}
+												size='sm'
+												icon={<DownloadIcon h={3} w={3} />}
+												aria-label="Exportar respostas" />
+										</Tooltip>
+										{" | "}
 										<Tooltip label="Editar" hasArrow placement="top">
 											<IconButton
 												as={Link}
 												to={`/questionarios/editar/${value.id}`}
-												type="submit"
 												size='sm'
 												icon={<EditIcon h={3} w={3} />}
 												aria-label="Editar" />
@@ -71,7 +79,6 @@ export const TableContent = () => {
 										{" "}
 										<Tooltip label="Excluir" hasArrow placement="top">
 											<IconButton
-												type="submit"
 												size='sm'
 												icon={<DeleteIcon h={3} w={3} />}
 												aria-label="Excluir" />
