@@ -1,21 +1,25 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "jsx": "react-jsx",
-        "strict": true,
-        "isolatedModules": true,
-        // "target": "ESNext",
-        "target": "ES5",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "noEmit": true,
-        "paths": {
-            "@/*": ["./resources/js/*"],
-            "@css/*": ["./resources/css/*"]
-        },
-        "skipLibCheck": true
-    },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"]
+	"compilerOptions": {
+		"strict": true,
+		// "target": "ESNext",
+		"target": "ES5",
+		"module": "ESNext",
+		"lib": ["ES6", "DOM"],
+		"allowJs": true,
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"removeComments": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"@css/*": ["./resources/css/*"],
+			"@img/*": ["./resources/img/*"],
+			"@/*": ["./resources/js/*"],
+		},
+		"skipLibCheck": true
+	},
+	"include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"]
 }

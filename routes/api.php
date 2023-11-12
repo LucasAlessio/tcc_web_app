@@ -21,22 +21,22 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 |
 */
 
-Route::post('/login', [AuthenticatedTokenController::class, 'store']);
+Route::post('/login/', [AuthenticatedTokenController::class, 'store']);
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
-	Route::get('/profile', [PatientsController::class, 'show']);
-	Route::post('/profile', [PatientsController::class, 'update']);
-	Route::put('/password', [PasswordController::class, 'update']);
+	Route::get('/profile/', [PatientsController::class, 'show']);
+	Route::post('/profile/', [PatientsController::class, 'update']);
+	Route::put('/password/', [PasswordController::class, 'update']);
 
-	Route::post('/refresh', [AuthenticatedTokenController::class, 'update']);
-	Route::post('/logout', [AuthenticatedTokenController::class, 'destroy']);
+	Route::post('/refresh/', [AuthenticatedTokenController::class, 'update']);
+	Route::post('/logout/', [AuthenticatedTokenController::class, 'destroy']);
 	
-	Route::get('/questionnaires', [QuestionnairesController::class, 'index']);
-	Route::get('/questionnaires/{id}', [QuestionnairesController::class, 'show']);
-	Route::post('/questionnaires/{id}/answer', [AnswersController::class, 'store']);
+	Route::get('/questionnaires/', [QuestionnairesController::class, 'index']);
+	Route::get('/questionnaires/{id}/', [QuestionnairesController::class, 'show']);
+	Route::post('/questionnaires/{id}/answer/', [AnswersController::class, 'store']);
 });
 
-Route::post('/register', [PatientsController::class, 'store']);
+Route::post('/register/', [PatientsController::class, 'store']);
 
 
 Route::any('/{path?}', function(){

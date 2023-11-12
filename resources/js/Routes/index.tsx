@@ -2,6 +2,7 @@ import { AuthenticatedTemplate } from "@/Layouts/AuthenticatedTemplate";
 import { Login } from "@/Pages/Auth/Login";
 import { Home } from "@/Pages/Home";
 import { NotFound } from "@/Pages/NotFound";
+import { Notificacoes } from "@/Pages/Notifications";
 import { Page } from "@/Pages/Page";
 import { ListPatients } from "@/Pages/Patients/List";
 import { PatientsProvider } from "@/Pages/Patients/ProviderPage";
@@ -41,6 +42,7 @@ export const AppRoutes = () => {
 						<Route path="exportar/:id" element={<ExportQuestionnaire />} />
 					</Route>
 					<Route path="perfil" element={<Profile />} />
+					<Route path="notificacoes" element={<Notificacoes />} />
 					<Route path="/*" element={<Page title="" startPath="/home"><NotFound /></Page>} />
 				</Route>
 

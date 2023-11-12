@@ -1,20 +1,20 @@
+import { HelpBlockError } from "@/Components/HelpBlockError";
 import { Label } from "@/Components/Label";
 import { TextInput } from "@/Components/TextInput";
 import { useAuth2 } from "@/Contexts/Auth2";
 import AuthTemplate from "@/Layouts/AuthTemplate";
 import useModals from "@/Modals";
+import { LoaderPage } from "@/Pages/Loading";
 import { isValidationException } from "@/types/utils";
-import { Alert, AlertIcon, Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Image, InputGroup, InputRightElement, Text, useColorModeValue } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Button, Flex, FormControl, Heading, Icon, Image, InputGroup, InputRightElement, Text, useColorModeValue } from "@chakra-ui/react";
+import Logo from '../../../img/display/logo.png';
+import NegativeLogo from '@img/display/logo_negative.png';
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
 import { FormProvider, Path, useForm } from "react-hook-form";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
-import { NavLink, Navigate, useNavigate } from "react-router-dom";
-import Logo from '../../../img/display/logo.png';
-import NegativeLogo from '../../../img/display/logo_negative.png';
-import { HelpBlockError } from "../../Components/HelpBlockError";
-import { LoaderPage } from "../Loading";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export type TForm = {
 	email: string,

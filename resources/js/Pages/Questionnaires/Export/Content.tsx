@@ -3,17 +3,17 @@ import { HelpBlockError } from "@/Components/HelpBlockError";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
 import { InputDatepicker } from "@/Components/InputDatepicker";
 import { Label } from "@/Components/Label";
-import { Box, Button, Flex, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, Toast, useToast } from "@chakra-ui/react";
+import { isValidationException } from "@/types/utils";
+import { br2intl } from "@/utils/date";
+import { Box, Button, Flex, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, useToast } from "@chakra-ui/react";
 import { Controller, Path, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
+import { useExportAnswers } from "../hooks/useExportAnswers";
 import { useGetQuestionnaire } from "../hooks/useGetQuestionnaire";
 import { QuestionnairesPage } from "../types";
 
 import 'react-calendar/dist/Calendar.css';
-import '../../../../css/calendar.css';
-import { useExportAnswers } from "../hooks/useExportAnswers";
-import { isValidationException } from "@/types/utils";
-import { br2intl } from "@/utils/date";
+import '@css/calendar.css';
 
 export const Content = () => {
 	const { id } = useParams<{ id: string; }>();
@@ -148,7 +148,7 @@ const FormFilters = ({ id, name }: QuestionnairesPage.Questionnaire) => {
 						render={({
 							field: { onChange, onBlur, value, name, ref }, fieldState: { invalid, isTouched, isDirty, error }, formState,
 						}) => (
-							<RadioGroup onChange={onChange as (event: QuestionnairesPage.TExportForm["format"]) => void} value={value} size="lg">
+							<RadioGroup onChange={onChange as (event: QuestionnairesPage.TExportForm["format"]) => void} value={value}>
 								<Stack direction="column">
 									<Radio value="columns">Um paciente por linha</Radio>
 									<Radio value="rows">Mais de um paciente por linha</Radio>

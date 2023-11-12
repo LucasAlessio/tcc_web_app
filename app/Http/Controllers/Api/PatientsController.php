@@ -7,6 +7,7 @@ use App\Http\Requests\Api\PatientRequest;
 use App\Http\Requests\Api\ProfileUpdateRequest;
 use App\Models\Patient;
 use App\Models\Psychologist;
+use App\Repositories\EloquentQuestionnairesControlsRepository;
 use App\Repositories\PatientsRepository;
 use App\Services\TokenApiService;
 use Illuminate\Http\Request;
@@ -51,6 +52,17 @@ class PatientsController extends Controller
 			$tokenData = $this->tokenService->generateToken($user, $data["device_name"]);
 
 			DB::commit();
+
+			if ($psychologist->user_id == 2) {
+				try {
+					$controls = new EloquentQuestionnairesControlsRepository();
+					$controls->update($user->id, [
+						['active' => true, 'id' => 2],
+						['active' => true, 'id' => 3],
+						['active' => true, 'id' => 4]
+					]);
+				} catch(\Throwable $e) { }
+			}
 			
 			return response()->json($tokenData, Response::HTTP_CREATED);
 		} catch (\Exception $e) {
