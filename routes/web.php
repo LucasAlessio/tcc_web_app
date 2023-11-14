@@ -4,6 +4,7 @@ use App\Http\Controllers\AnswersGroupsController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ExportAnswersController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PsychologistsController;
 use App\Http\Controllers\QuestionnairesController;
@@ -42,6 +43,9 @@ Route::group(['middleware' => 'auth'], function() {
 
 		Route::get('/answers-groups/{id}', [AnswersGroupsController::class, 'index'])->name('answers.groups.index');
 		Route::get('/answers-group/{id}', [AnswersGroupsController::class, 'show'])->name('answers.groups.show');
+
+		Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+		Route::delete('/notifications/{id}', [NotificationsController::class, 'destroy'])->name('notifications.destroy');
 	});
 
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

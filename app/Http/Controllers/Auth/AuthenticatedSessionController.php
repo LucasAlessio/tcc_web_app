@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Repositories\NotificationsRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,10 @@ use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+	public function __construct(
+		private NotificationsRepository $repository,
+	) {	}
+
 	/**
 	 * Get indentity
 	 */
@@ -26,6 +31,7 @@ class AuthenticatedSessionController extends Controller
 		return [
 			'auth' => [
 				'user' => $user,
+				'hasNotifications' => $this->repository->hasNotifications($user->id),
 			],
 		];
 	}

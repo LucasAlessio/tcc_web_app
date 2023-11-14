@@ -1,7 +1,7 @@
-import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
-import { IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
 import { date2br } from "@/utils/date";
+import { ViewIcon } from "@chakra-ui/icons";
+import { IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useGetPatients } from "../hooks/useGetPatients";
 

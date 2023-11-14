@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Repositories\AnswersGroupsRepository;
 use App\Repositories\EloquentAnswersGroupsRepository;
+use App\Repositories\EloquentNotificationsRepository;
 use App\Repositories\EloquentPatientsRepository;
 use App\Repositories\EloquentPsychologistsRepository;
 use App\Repositories\EloquentQuestionnairesControlsRepository;
 use App\Repositories\EloquentQuestionnairesRepository;
 use App\Repositories\EloquentUsersRepository;
+use App\Repositories\NotificationsRepository;
 use App\Repositories\PatientsRepository;
 use App\Repositories\PsychologistsRepository;
 use App\Repositories\QuestionnairesControlsRepository;
@@ -25,6 +27,7 @@ class RepositoriesProvider extends ServiceProvider
 		PatientsRepository::class => EloquentPatientsRepository::class,
 		QuestionnairesControlsRepository::class => EloquentQuestionnairesControlsRepository::class,
 		AnswersGroupsRepository::class => EloquentAnswersGroupsRepository::class,
+		NotificationsRepository::class => EloquentNotificationsRepository::class,
 	];
 
 	/**

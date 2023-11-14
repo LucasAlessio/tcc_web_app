@@ -2,11 +2,11 @@
 import { useAuth2 } from '@/Contexts/Auth2';
 import useModals from '@/Modals';
 import { SidebarResponsive } from '@/Parts/Sidebar';
-import { Avatar, Box, Button, Flex, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
-import { PropsWithChildren } from 'react';
+import { Avatar, Button, Flex, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
-import { MdInfoOutline, MdNotifications, MdNotificationsNone } from 'react-icons/md';
+import { MdInfoOutline } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { NotificationsMenu } from './NotificationsMenu';
 
 export const HeaderLinks = (props: { secondary: boolean }) => {
 	const { secondary } = props;
@@ -14,12 +14,10 @@ export const HeaderLinks = (props: { secondary: boolean }) => {
 
 	// Chakra Color Mode
 	const navbarIcon = useColorModeValue('gray.400', 'white');
-	let menuBg = useColorModeValue('white', 'navy.800');
+	const menuBg = useColorModeValue('white', 'navy.800');
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
-	const textColorBrand = useColorModeValue('brand.700', 'brand.400');
 
 	const borderColor = useColorModeValue('#E6ECFA', 'rgba(135, 140, 189, 0.3)');
-	const notifyColor = useColorModeValue('red.600', 'red.500');
 
 	const shadow = useColorModeValue(
 		'14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
@@ -70,81 +68,7 @@ export const HeaderLinks = (props: { secondary: boolean }) => {
 					borderRadius='30px'
 				/> */}
 
-				<Menu>
-					{({ isOpen }) => (
-						<>
-							<MenuButton
-								bg='transparent'
-								p='0px'
-								minW='unset'
-								minH='unset'
-								h='18px'
-								w='max-content'
-								lineHeight="1"
-								position="relative">
-
-								<Icon
-									as={MdNotificationsNone}
-									color={navbarIcon}
-									me='10px'
-									h='18px'
-									w='18px' />
-
-								<Box
-									position="absolute"
-									width="8px"
-									height="8px"
-									background={notifyColor}
-									borderRadius="50%"
-									right={0}
-									top={0}
-									marginEnd="10px" />
-							</MenuButton>
-
-							<MenuList
-								boxShadow={shadow}
-								p='20px'
-								borderRadius='20px'
-								bg={menuBg}
-								border='none'
-								mt='22px'
-								me={{ base: '30px', md: 'unset' }}
-								minW={{ base: 'unset', md: '400px', xl: '450px' }}
-								maxW={{ base: '360px', md: 'unset' }}>
-								<Flex w='100%' mb='20px'>
-									<Text fontSize='md' fontWeight='600' color={textColor}>
-										Notificações
-									</Text>
-									<Text fontSize='sm' fontWeight='500' color={textColorBrand} ms='auto' cursor='pointer'>
-										Ver todas
-									</Text>
-								</Flex>
-								<Flex flexDirection='column'>
-									<MenuItem _hover={{ bg: 'none' }} _focus={{ bg: 'none' }} px='0' borderRadius='8px' mb='10px'>
-										<ItemContent info='Lucas'>
-											<Text
-												fontSize={{ base: "sm", md: "sm" }}
-												lineHeight='100%'
-												color={textColor}>
-												Novo envio de respostas para <b>COBRA</b>
-											</Text>
-										</ItemContent>
-									</MenuItem>
-									<MenuItem _hover={{ bg: 'none' }} _focus={{ bg: 'none' }} px='0' borderRadius='8px' mb='10px'>
-										<ItemContent info='Enrico Assis'>
-											<Text
-												fontSize={{ base: "sm", md: "sm" }}
-												lineHeight='100%'
-												color={textColor}>
-												Novo envio de respostas para <b>PHQ-9</b>
-											</Text>
-										</ItemContent>
-									</MenuItem>
-								</Flex>
-							</MenuList>
-						</>
-					)}
-				</Menu>
+				<NotificationsMenu />
 
 				<Menu>
 					<MenuButton
@@ -251,37 +175,5 @@ export const HeaderLinks = (props: { secondary: boolean }) => {
 				</Menu>
 			</Flex>
 		</Flex>
-	);
-}
-
-export function ItemContent(props: PropsWithChildren<{ info: string }>) {
-	const textColor = useColorModeValue("navy.700", "white");
-	return (
-		<>
-			<Flex
-				justify='center'
-				align='center'
-				borderRadius='16px'
-				minH={{ base: "60px", md: "70px" }}
-				h={{ base: "60px", md: "70px" }}
-				minW={{ base: "60px", md: "70px" }}
-				w={{ base: "60px", md: "70px" }}
-				me='14px'
-				bg='linear-gradient(135deg, #868CFF 0%, #4318FF 100%)'>
-				<Icon as={MdNotifications} color='white' w={8} h={14} />
-			</Flex>
-			<Flex flexDirection='column'>
-				<Text
-					mb='5px'
-					fontWeight='bold'
-					color={textColor}
-					fontSize={{ base: "md", md: "md" }}>
-					{props.info}
-				</Text>
-				<Flex alignItems='center'>
-					{props.children}
-				</Flex>
-			</Flex>
-		</>
 	);
 }
