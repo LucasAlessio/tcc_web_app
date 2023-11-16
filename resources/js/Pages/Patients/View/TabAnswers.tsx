@@ -1,12 +1,19 @@
 import { Card } from "@/Components/Card";
+import { HelpBlockError } from "@/Components/HelpBlockError";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
+import { Label } from "@/Components/Label";
+import { TextArea } from "@/Components/TextArea";
+import { QuestionTypeEnum } from "@/Enums/QuestionTypeEnum";
+import useModals from "@/Modals";
+import { isValidationException } from "@/types/utils";
 import { date2br } from "@/utils/date";
-import { Badge, Button, Grid, GridItem, Text, useColorModeValue } from "@chakra-ui/react";
+import { Badge, Box, Button, Divider, FormControl, Grid, GridItem, SimpleGrid, Text, useColorModeValue, useToast } from "@chakra-ui/react";
+import { Path, useForm } from "react-hook-form";
+import { useGetAnswersGroup } from "../hooks/useGetAnswersGroup";
 import { useGetAnswersGroups } from "../hooks/useGetAnswersGroups";
+import { useSaveComment } from "../hooks/useSaveComment";
 import { PatientsPage } from "../types";
 import { useAnswersPatientContext } from "./context";
-import { useGetAnswersGroup } from "../hooks/useGetAnswersGroup";
-import { QuestionTypeEnum } from "@/Enums/QuestionTypeEnum";
 
 export const TabAnswers = ({ id }: { id: string; }) => {
 	const { data, isLoading, isSuccess, isError, error } = useGetAnswersGroups(id);
@@ -117,14 +124,26 @@ const AnswersContent = ({ id }: { id: number; }) => {
 const Answers = ({ group }: { group: PatientsPage.AnswersGroup; }) => {
 	const cardShadow = useColorModeValue('0px 18px 40px rgba(112, 144, 176, 0.12)', '0px 18px 40px rgba(10, 12, 15, 0.3)');
 
+	const coeficiente = group.answers.reduce((acc, value) => {
+		if (value.question.type == QuestionTypeEnum.CHOICE) {
+			return acc + (value.alternative?.value ?? 0);
+		}
+
+		return acc;
+	}, 0);
+
 	return (
 		<>
-			<Text as="h2" fontSize="18px" fontWeight="bold" mb="24px">
+			<Text as="h2" fontSize="18px" fontWeight="bold" mb="14px">
 				{group.questionnaire.name}
 				&nbsp;
 				<Badge variant='outline'>
 					{date2br(group.created_at)}
 				</Badge>
+			</Text>
+
+			<Text as="h3" fontSize="16px" fontWeight="bold" mb="24px">
+				Coficiente calculado: {coeficiente} ({coeficiente * 2})
 			</Text>
 
 			{group.answers.map((answer, index) => (
@@ -147,6 +166,70 @@ const Answers = ({ group }: { group: PatientsPage.AnswersGroup; }) => {
 					)}
 				</Card>
 			))}
+
+			<Divider my="24px" />
+
+			<Comment group={group} />
 		</>
 	);
 };
+
+const Comment = ({ group: { id, psychologist_comment } }: { group: PatientsPage.AnswersGroup; }) => {
+	const { register, formState: { errors }, handleSubmit, setError } = useForm<PatientsPage.TComentForm>({
+		values: {
+			psychologist_comment,
+		}
+	});
+
+	const { mutate, isLoading } = useSaveComment(id);
+
+	const toast = useToast();
+	const { alert } = useModals();
+
+	const submit = handleSubmit((formData) => {
+		mutate(formData, {
+			onSuccess(response) {
+				toast({
+					title: 'Comentário salvo',
+					description: "As informações foram salvas com sucesso.",
+					status: 'success',
+					duration: 6000,
+					isClosable: true,
+				});
+			},
+			onError(e) {
+				if (isValidationException(e)) {
+					Object.entries(e.errors).map(([field, errors]) => {
+						setError(field as Path<PatientsPage.TComentForm>, {
+							message: errors[0],
+							type: "validate",
+						});
+					});
+
+					return;
+				}
+
+				return alert({
+					title: "Ocorreu um erro",
+					message: e.message,
+				});
+			}
+		});
+	});
+
+	return (
+		<form onSubmit={submit}>
+			<SimpleGrid columns={{ base: 1 }}>
+				<FormControl mb='12px' isInvalid={!!errors.psychologist_comment}>
+					<Label>Comentário</Label>
+					<TextArea {...register("psychologist_comment")} placeholder="Comentário" minH={"300px"} />
+					<HelpBlockError name="psychologist_comment" errors={errors} />
+				</FormControl>
+			</SimpleGrid>
+
+			<Box mt="12px">
+				<Button variant="brand" type="submit" isLoading={isLoading} loadingText="Salvando">Salvar</Button>
+			</Box>
+		</form>
+	)
+}

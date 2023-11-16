@@ -13,7 +13,7 @@ return new class extends Migration
 	{
 		Schema::create('answers_groups', function (Blueprint $table) {
 			$table->id();
-			$table->text('psycholigist_comment')->nullable(true)->default(null);
+			$table->text('psychologist_comment')->nullable(true)->default(null);
 			$table->unsignedBigInteger('questionnaire_id', false);
 			$table->unsignedBigInteger('user_id', false);
 			$table->foreign('questionnaire_id')->references('id')->on('questionnaires');

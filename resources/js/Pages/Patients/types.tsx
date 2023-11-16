@@ -66,6 +66,7 @@ export declare module PatientsPage {
 			id: number,
 			name: string,
 		},
+		psychologist_comment?: string,
 		answers: ({
 			id: number,
 		} & ({
@@ -93,4 +94,6 @@ export declare module PatientsPage {
 			},
 		}))[],
 	};
+
+	type TComentForm = Pick<AnswersGroup, "psychologist_comment">;
 }

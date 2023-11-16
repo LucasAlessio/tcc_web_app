@@ -56,4 +56,11 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 			]))
 			->get();
 	}
+
+	public function update(int $id, array $data): AnswersGroup {
+		$answerGroup = AnswersGroup::findOrFail($id);
+		$answerGroup->update($data);
+
+		return $answerGroup;
+	}
 }

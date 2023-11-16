@@ -13,4 +13,6 @@ interface AnswersGroupsRepository {
 
 	public function getToExport(Collection $filters): object;
 
+	public function update(int $id, array $data): AnswersGroup;
+
 }
