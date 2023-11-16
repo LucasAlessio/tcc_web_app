@@ -18,9 +18,7 @@ class NotificationsController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		$old = boolval($request->query('old', false));
-
-		return $this->repository->getUserNotifications($request->user()->id, $old);
+		return $this->repository->getUserNotifications($request->user()->id, collect($request->all()));
 	}
 
 	/**

@@ -1,15 +1,13 @@
-import { Card } from "@/Components/Card";
 import { FilterContent, ResetFiltersButton } from "@/Components/Filter/FilterContent";
 import { TextInput } from "@/Components/TextInput";
 import { SearchIcon } from "@chakra-ui/icons";
 import { Flex, IconButton, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { Pagination } from "../../../Components/Pagination";
 import { defaultFilters } from "../ProviderPage";
 import { usePatientsFilters } from "../hooks/usePatientsFilters";
 import { TableContent } from "./TableContent";
 
 export const Content = () => {
-	const { form: { register, setValue }, filters, applyFilters } = usePatientsFilters();
+	const { form: { register }, applyFilters } = usePatientsFilters();
 
 	return (
 		<>
@@ -30,16 +28,7 @@ export const Content = () => {
 				</FilterContent>
 			</Flex>
 
-			<Card>
-				<TableContent />
-			</Card>
-
-			{<Pagination
-				size={filters.limit}
-				page={filters.page}
-				setPage={(page) => setValue("page", page, true)}
-				setPageSize={(size) => setValue("limit", size, true)}
-				total={1} />}
+			<TableContent />
 		</>
 	);
 };

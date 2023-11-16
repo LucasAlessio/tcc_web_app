@@ -18,7 +18,7 @@ class EloquentPsychologistsRepository implements PsychologistsRepository {
 			$query->where("name", "like", '%' . (string) $filters->get("search") . '%');
 		}
 
-		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT);
+		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
 	public function getById(int $id): ?User {

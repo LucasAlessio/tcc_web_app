@@ -1,4 +1,5 @@
 import { Card } from "@/Components/Card";
+import { FilterContent, ResetFiltersButton } from "@/Components/Filter/FilterContent";
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
 import { OverlayLoader } from "@/Components/OverlayLoader";
 import { TextInput } from "@/Components/TextInput";
@@ -8,11 +9,10 @@ import { AddIcon, DeleteIcon, EditIcon, SearchIcon } from "@chakra-ui/icons";
 import { Button, Flex, IconButton, InputGroup, InputRightElement, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pagination } from "../../../Components/Pagination";
+import { defaultFilters } from "../ProviderPage";
 import { useDeletePsychologist } from "../hooks/useDeletePsychologist";
 import { useGetPsychologists } from "../hooks/useGetPsychologists";
 import { usePsychologistsFilters } from "../hooks/usePsychologistsFilters";
-import { FilterContent, ResetFiltersButton } from "@/Components/Filter/FilterContent";
-import { defaultFilters } from "../ProviderPage";
 
 export const Content = () => {
 	const { form: { register, setValue }, filters, applyFilters } = usePsychologistsFilters();
@@ -170,12 +170,12 @@ export const Content = () => {
 				})()}
 			</Card>
 
-			{(data?.total ?? 0) > 0 && <Pagination
+			<Pagination
 				size={filters.limit}
 				page={filters.page}
 				setPage={(page) => setValue("page", page, true)}
 				setPageSize={(size) => setValue("limit", size, true)}
-				total={data?.total ?? 1} />}
+				total={data?.total || 1} />
 		</>
 	);
 };

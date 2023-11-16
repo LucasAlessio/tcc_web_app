@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Enums\SystemConfigEnum;
+use Illuminate\Support\Collection;
 use App\Models\Notification;
 use Carbon\Carbon;
 
@@ -19,18 +21,18 @@ class EloquentNotificationsRepository implements NotificationsRepository {
 		return !$query->isEmpty();
 	}
 
-	public function getUserNotifications(int $userId, bool $old = false): object {
+	public function getUserNotifications(int $userId, ?Collection $filters = null): object {
 		$query = Notification::query()
 			->where([
 				'user_id' => $userId,
 			]);
 
-		if ($old) {
+		if ($filters->has('old') && boolval($filters->get('old', false))) {
 			$query->whereNot('viewed_at', null, null);
-		} else {
-			$query->where('viewed_at', '=', null);
+			return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 		}
-
+		
+		$query->where('viewed_at', '=', null);
 		return $query->get();
 	}
 	

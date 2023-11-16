@@ -8,4 +8,9 @@ export declare module NotificationsPage {
 		created_at: string,
 		updated_at: string,
 	}
+
+	type FiltersOldNotifications = {
+		page: number,
+		limit: number,
+	}
 }

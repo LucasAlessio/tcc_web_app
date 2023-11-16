@@ -1,13 +1,13 @@
 import { IndeterminatedCircularProgress } from "@/Components/InderteminatedCircularProgress";
-import { ViewIcon } from "@chakra-ui/icons";
-import { IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
-import { MdArchive } from "react-icons/md";
-import { Link } from "react-router-dom";
-import { NotificationsPage } from "./types";
-import { convertMarkupBold2Html } from "@/utils/text";
 import { date2br } from "@/utils/date";
+import { convertMarkupBold2Html } from "@/utils/text";
+import { ViewIcon } from "@chakra-ui/icons";
+import { Box, Flex, IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
+import { MdArchive } from "react-icons/md";
 import { UseQueryResult } from "react-query";
+import { useArchiveNotification } from "./hooks/useArchiveNotification";
 import { useHandleViewNotification } from "./hooks/useHandleViewNotification";
+import { NotificationsPage } from "./types";
 
 export const TableContent = (props: UseQueryResult<NotificationsPage.Notification[], Error>) => {
 	const { data, isFetching, isSuccess, isError, error } = props;
@@ -15,8 +15,6 @@ export const TableContent = (props: UseQueryResult<NotificationsPage.Notificatio
 	if (isError) {
 		return error?.message;
 	}
-
-	const handleNavigate = useHandleViewNotification();
 
 	return (
 		<TableContainer overflowX="auto" whiteSpace="nowrap">
@@ -55,27 +53,7 @@ export const TableContent = (props: UseQueryResult<NotificationsPage.Notificatio
 						}
 
 						return data.map((notification) => (
-							<Tr key={notification.id}>
-								<Td><b>{notification.title}</b>: <span dangerouslySetInnerHTML={{ __html: convertMarkupBold2Html(notification.description) }} /></Td>
-								<Td whiteSpace="nowrap">{date2br(notification.created_at)}</Td>
-								<Td whiteSpace="nowrap">
-									<Tooltip label="Visualizar" hasArrow placement="top">
-										<IconButton
-											size='sm'
-											icon={<ViewIcon h={3} w={3} />}
-											aria-label="Visualizar"
-											onClick={handleNavigate(notification)} />
-									</Tooltip>
-									{" "}
-									{!notification.viewed_at && <Tooltip label="Arquivar" hasArrow placement="top">
-										<IconButton
-											size='sm'
-											icon={<MdArchive h={3} w={3} />}
-											aria-label="Arquivar"
-											onClick={() => { }} />
-									</Tooltip>}
-								</Td>
-							</Tr>
+							<NotificationTableTr key={notification.id} {...notification} />
 						));
 					})()}
 				</Tbody>
@@ -83,3 +61,46 @@ export const TableContent = (props: UseQueryResult<NotificationsPage.Notificatio
 		</TableContainer>
 	);
 };
+
+const NotificationTableTr = (props: NotificationsPage.Notification) => {
+	const { id, title, description, created_at, viewed_at } = props;
+
+	const { mutate, isLoading } = useArchiveNotification();
+
+	const handleNavigate = useHandleViewNotification();
+	const handleArchive = () => {
+		mutate(id);
+	}
+
+	return (
+		<Tr>
+			<Td><b>{title}</b>: <span dangerouslySetInnerHTML={{ __html: convertMarkupBold2Html(description) }} /></Td>
+			<Td whiteSpace="nowrap">{date2br(created_at)}</Td>
+			<Td whiteSpace="nowrap">
+				<Tooltip label="Visualizar" hasArrow placement="top">
+					<IconButton
+						size='sm'
+						icon={<ViewIcon h={3} w={3} />}
+						aria-label="Visualizar"
+						onClick={handleNavigate(props)} />
+				</Tooltip>
+				{" "}
+				{!viewed_at && (
+					isLoading ? (
+						<Box display="inline-block" h="32px" w="32px" lineHeight="32px" textAlign="center">
+							<IndeterminatedCircularProgress size="15px" />
+						</Box>
+					) : (
+						<Tooltip label="Arquivar" hasArrow placement="top">
+							<IconButton
+								size='sm'
+								icon={<MdArchive h={3} w={3} />}
+								aria-label="Arquivar"
+								onClick={handleArchive} />
+						</Tooltip>
+					)
+				)}
+			</Td>
+		</Tr>
+	)
+}

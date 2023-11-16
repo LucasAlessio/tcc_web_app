@@ -6,7 +6,6 @@ export const ListPsychologists = () => {
 		<Page
 			title="Psicólogos"
 			startPath="/psicologos">
-
 			<Content />
 		</Page >
 	);

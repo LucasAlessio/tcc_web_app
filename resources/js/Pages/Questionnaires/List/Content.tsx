@@ -39,12 +39,12 @@ export const Content = () => {
 				<TableContent />
 			</Card>
 
-			{<Pagination
+			<Pagination
 				size={filters.limit}
 				page={filters.page}
 				setPage={(page) => setValue("page", page, true)}
 				setPageSize={(size) => setValue("limit", size, true)}
-				total={1} />}
+				total={1} />
 		</>
 	);
 };

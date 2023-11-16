@@ -3,12 +3,13 @@
 namespace App\Repositories;
 
 use App\Models\Notification;
+use Illuminate\Support\Collection;
 
 interface NotificationsRepository {
 
 	public function hasNotifications(int $userId): bool;
 
-	public function getUserNotifications(int $userId, bool $old = false): object;
+	public function getUserNotifications(int $userId, ?Collection $filters = null): object;
 
 	public function create(array $data): Notification;
 
