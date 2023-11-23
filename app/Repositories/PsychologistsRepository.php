@@ -15,6 +15,6 @@ interface PsychologistsRepository {
 
 	public function update(int $id, array $data): User;
 
-	public function delete(int $id): int;
+	public function delete(int $id): bool;
 
 }

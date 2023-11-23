@@ -78,29 +78,17 @@ class EloquentPsychologistsRepository implements PsychologistsRepository {
 		}
 	}
 
-	public function delete(int $id): int {
-		try {
-			DB::beginTransaction();
+	public function delete(int $id): bool {
+		$user = User::where([
+			'role' => UserRole::PSYCHOLOGIST->value,
+			'id' => $id,
+		])->first();
 
-			$user = User::where([
-				'role' => UserRole::PSYCHOLOGIST->value,
-				'id' => $id,
-			])->first();
-
-			if (!$user) {
-				return 0;
-			}
-
-			$user->psychologist()->delete();
-			$user->delete();
-
-			DB::commit();
-
-			return 1;
-		} catch (\Exception $e) {
-			DB::rollBack();
-
-			throw $e;
+		if (!$user) {
+			return false;
 		}
+
+		$deleted = $user->delete();
+		return (bool) $deleted;
 	}
 }

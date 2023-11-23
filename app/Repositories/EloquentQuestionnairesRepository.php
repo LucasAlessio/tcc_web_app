@@ -124,6 +124,19 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			]);
 	}
 
+	public function delete(int $id): bool {
+		$questionnaire = Questionnaire::where([
+			'id' => $id,
+		])->first();
+
+		if (!$questionnaire) {
+			return false;
+		}
+
+		$deleted = $questionnaire->delete();
+		return (bool) $deleted;
+	}
+
 	private function updateQuestions(Questionnaire $questionnaire, array $questions) {
 		$oldQuestions = $questionnaire->questions;
 		$oldQuestions = Arr::keyBy($oldQuestions, 'id');

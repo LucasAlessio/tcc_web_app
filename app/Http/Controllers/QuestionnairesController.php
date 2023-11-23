@@ -74,8 +74,10 @@ class QuestionnairesController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Questionnaire $questionnaire)
+	public function destroy($id)
 	{
-		//
+		if (!$this->repository->delete((int) $id)) {
+			throw new NotFoundHttpException("Nenhum registro encontrado");
+		}
 	}
 }

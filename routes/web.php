@@ -58,6 +58,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::post('/questionnaires', [QuestionnairesController::class, 'store'])->name('questionnaires.store');
 	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
+	Route::delete('/questionnaires/{id}', [QuestionnairesController::class, 'destroy'])->name('questionnaires.destroy');
 
 	Route::post('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'update'])->name('questionnaires.controls.update');
 
