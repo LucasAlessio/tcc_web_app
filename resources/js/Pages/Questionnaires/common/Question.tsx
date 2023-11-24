@@ -3,11 +3,12 @@ import { Label } from "@/Components/Label";
 import { TextInput } from "@/Components/TextInput";
 import { QuestionTypeEnum, QuestionTypeEnumDefinitions } from "@/Enums/QuestionTypeEnum";
 import { AddIcon, ArrowDownIcon, ArrowUpIcon, CheckIcon, CopyIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Box, ButtonGroup, Flex, FormControl, IconButton, InputGroup, InputLeftElement, InputRightElement, Menu, MenuButton, MenuItem, MenuList, SimpleGrid, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex, FormControl, IconButton, InputGroup, InputLeftElement, InputRightElement, Menu, MenuButton, MenuItem, MenuList, SimpleGrid, Tooltip, useColorModeValue, useToast } from "@chakra-ui/react";
 import { FieldArrayWithId, useFieldArray, useFormContext } from "react-hook-form";
 import { QuestionnairesPage } from "../types";
 import { ValuesOf } from "@/types";
 import { Alternative } from "./Alternative";
+import { useIsEditingQuestionnaire, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
 
 type QuestionProps = {
 	field: FieldArrayWithId<QuestionnairesPage.TForm, "questions", "_id">;
@@ -26,28 +27,40 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 		name: `questions.${questionIndex}.alternatives`,
 		keyName: "_id",
 	});
-
+	const isEditing = useIsEditingQuestionnaire();
 	const borderColor = useColorModeValue('secondaryGray.100', 'whiteAlpha.100');
 
 	const handleAddAlternative = (event: React.MouseEvent<HTMLElement>) => {
+		if (isEditing) {
+			toast("Não é possível adicionar alternativas em instrumentos já respondidos");
+			return;
+		}
+
 		clearErrors(`questions.${questionIndex}.alternatives`);
 		append({
 			description: '',
 		});
 	};
 
+	const toast = useToastQuestionnaireBlocked();
+
 	const handleRemoveAlternative = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
-			const alternative = getValues(`questions.${questionIndex}.alternatives.${index}`);
+			if (isEditing) {
+				toast("Não é possível remover alternativas de instrumentos já respondidos");
+				return
+			};
 
-			if (alternative.id) {
-				update(index, {
-					...alternative,
-					deleted: true,
-				});
+			// const alternative = getValues(`questions.${questionIndex}.alternatives.${index}`);
 
-				return;
-			}
+			// if (alternative.id) {
+			// 	update(index, {
+			// 		...alternative,
+			// 		deleted: true,
+			// 	});
+
+			// 	return;
+			// }
 
 			remove(index);
 		};
@@ -56,6 +69,11 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 	const handleChangeQuestionType = (value: ValuesOf<typeof QuestionTypeEnum>) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
+			if (isEditing) {
+				toast("Não é possível mudar o tipo de questões em instrumentos já respondidos");
+				return
+			};
+
 			// Necessário fazer dessa forma para
 			// pegar as alternativas aninhadas também
 			const field = getValues(`questions.${questionIndex}`);
@@ -93,15 +111,17 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 									</MenuButton>
 								</Tooltip>
 								<MenuList>
-									{Object.entries(QuestionTypeEnumDefinitions).map(([value, label]) => (
-										<MenuItem
+									{Object.entries(QuestionTypeEnumDefinitions).map(([value, label]) => {
+										if (Number(value) == QuestionTypeEnum.MULTIPLE_CHOICE) return;
+
+										return <MenuItem
 											key={value}
 											onClick={handleChangeQuestionType(Number(value) as ValuesOf<typeof QuestionTypeEnum>)}
 											justifyContent="space-between">
 											{label}
 											{field.type == Number(value) && <CheckIcon color="green" />}
 										</MenuItem>
-									))}
+									})}
 								</MenuList>
 							</Menu>
 						</InputLeftElement>
@@ -135,9 +155,11 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 			{(field.type == QuestionTypeEnum.CHOICE || field.type == QuestionTypeEnum.MULTIPLE_CHOICE) && (
 				<>
 					<Flex position="relative" justifyContent="flex-start" flexWrap="wrap" mx="-6px" zIndex={0} mb="12px">
-						{fields.filter(field => !field.deleted).map((field, index) => (
-							<Alternative key={field._id} questionIndex={questionIndex} alternativeIndex={index} handleRemove={handleRemoveAlternative(index)} />
-						))}
+						{fields.map((field, index) => {
+							if (field.deleted) return;
+
+							return <Alternative key={field._id} questionIndex={questionIndex} alternativeIndex={index} handleRemove={handleRemoveAlternative(index)} />
+						})}
 
 						<Box px="6px" mb="12px">
 							<Tooltip label="Adicionar alternativa" hasArrow placement="top">

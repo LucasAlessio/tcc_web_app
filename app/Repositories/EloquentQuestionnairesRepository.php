@@ -4,16 +4,15 @@ namespace App\Repositories;
 
 use App\Enums\QuestionTypeEnum;
 use App\Enums\SystemConfigEnum;
-use App\Enums\UserRole;
 use App\Models\Question;
 use App\Models\Questionnaire;
-use App\Models\User;
+use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
@@ -74,7 +73,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		}
 	}
 
-	public function update(int $id, array $data): Questionnaire
+	public function update(int $id, array $data, bool $isAnswerd): Questionnaire
 	{
 		try {
 			DB::beginTransaction();
@@ -82,7 +81,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			$questionnaire = Questionnaire::findOrFail($id);
 			$questionnaire->update($data);
 
-			$this->updateQuestions($questionnaire, $data['questions']);
+			$this->updateQuestions($questionnaire, $data['questions'], $isAnswerd);
 
 			DB::commit();
 
@@ -137,11 +136,11 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		return (bool) $deleted;
 	}
 
-	private function updateQuestions(Questionnaire $questionnaire, array $questions) {
-		$oldQuestions = $questionnaire->questions;
-		$oldQuestions = Arr::keyBy($oldQuestions, 'id');
+	private function updateQuestions(Questionnaire $questionnaire, array $newQuestions, bool $isAnswerd) {
+		$oldQuestions = Arr::keyBy($questionnaire->questions, 'id');
+		$newQuestionsIds = [];
 
-		foreach ($questions as $key => $question) {
+		foreach ($newQuestions as $key => $question) {
 			$data = array_merge($question, [
 				'position' => (int) $key,
 			]);
@@ -149,9 +148,8 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			if (!empty($question["id"]) && array_key_exists($question["id"], $oldQuestions)) {
 				$newQuestion = $oldQuestions[$question["id"]];
 
-				if (!empty($question["deleted"])) {
-					$newQuestion->delete();
-					continue;
+				if ($newQuestion->type != $data["type"]) {
+					throw new Exception("Não é possível mudar o tipo de questões em instrumentos já respondidos.");
 				}
 
 				$newQuestion->fill($data);
@@ -160,35 +158,72 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 					$newQuestion->save();
 				}
 			} else {
+				if ($isAnswerd) {
+					throw new Exception("Não é possível adicionar questões em instrumentos já respondidos.");
+				}
+
 				$newQuestion = $questionnaire->questions()->create($data);
 			}
 
+			$newQuestionsIds[] = $newQuestion->id;
+
 			if (!in_array($question["type"], [QuestionTypeEnum::CHOICE->value, QuestionTypeEnum::MULTIPLE_CHOICE->value])) {
 				// $newQuestion->alternatives()->delete();
+				// Deletar alternativas caso (old question).type != (new question).type
 				continue;
 			};
 
-			$this->updateAlternatives($newQuestion, $question["alternatives"]);
+			$this->updateAlternatives($newQuestion, $question["alternatives"], $isAnswerd);
+		}
+
+		foreach($oldQuestions as $id => $question) {
+			if (in_array($id, $newQuestionsIds)) continue;
+
+			if ($isAnswerd) {
+				throw new Exception("Não é possível remover questões de instrumentos já respondidos.");
+			}
+
+			//Todo remove alternatives
+			$question->delete();
 		}
 	}
 
-	private function updateAlternatives(Question $question, array $alternatives) {
-		$oldAlternatives = $question->alternatives->toArray();
-		// $oldAlternatives = Arr::keyBy($oldAlternatives, 'id');
+	private function updateAlternatives(Question $question, array $newAlternatives, bool $isAnswerd) {
+		$oldAlternatives = Arr::keyBy($question->alternatives, 'id');
+		$newAlternativesIds = [];
 
-		// foreach ($alternatives as $alternative) {
-		// 	if ($alternative["id"]) {
-		// 		$oldAlternative = Alternative::find($alternative["id"]);
-		// 		$oldAlternative->fill($alternative);
+		foreach ($newAlternatives as $key => $alternative) {
+			$data = array_merge($alternative, [
+				'value' => (int) $key,
+			]);
 
-		// 		if ($oldAlternative->isDirty()) {
-		// 			$oldAlternative->save();
-		// 		}
-		// 	} else {
-		// 		$question->alternatives()->create($alternative);
-		// 	}
+			if (!empty($alternative["id"]) && array_key_exists($alternative["id"], $oldAlternatives)) {
+				$newAlternative = $oldAlternatives[$alternative["id"]];
 
-		// 	if ($question['type'] != QuestionTypeEnum::CHOICE) continue;
-		// }
+				$newAlternative->fill($data);
+
+				if ($newAlternative->isDirty()) {
+					$newAlternative->save();
+				}
+			} else {
+				if ($isAnswerd) {
+					throw new Exception("Não é possível adicionar alternativas em instrumentos já respondidos.");
+				}
+
+				$newAlternative = $question->alternatives()->create($data);
+			}
+
+			$newAlternativesIds[] = $newAlternative->id;
+		}
+
+		foreach($oldAlternatives as $id => $alternative) {
+			if (in_array($id, $newAlternativesIds)) continue;
+
+			if ($isAnswerd) {
+				throw new Exception("Não é possível remover alternativas de instrumentos já respondidos.");
+			}
+			
+			$alternative->delete();
+		}
 	}
 }

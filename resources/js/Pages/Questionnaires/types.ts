@@ -8,6 +8,7 @@ export declare module QuestionnairesPage {
 	}
 
 	type TForm = {
+		id?: number,
 		name: string,
 		description: string,
 		recurrence: string,
@@ -28,6 +29,7 @@ export declare module QuestionnairesPage {
 				}[],
 			})
 		)[],
+		isAnswerd?: boolean,
 	}
 
 	type Questionnaire = {

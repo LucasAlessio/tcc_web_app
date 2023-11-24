@@ -7,6 +7,7 @@ import { Box, Button, FormControl, Heading, NumberDecrementStepper, NumberIncrem
 import { SubmitHandler, useFieldArray, useFormContext } from "react-hook-form";
 import { QuestionnairesPage } from "../types";
 import { Question } from "./Question";
+import { useIsEditingQuestionnaire, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
 
 type FormProps = {
 	isSubmitting: boolean
@@ -20,13 +21,20 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 		name: "questions",
 		keyName: "_id",
 	});
-
+	const isEditing = useIsEditingQuestionnaire();
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
 
 	const submit = handleSubmit(onSubmit);
 
+	const toast = useToastQuestionnaireBlocked();
+
 	const handleAddQuestion = () => {
 		clearErrors('questions');
+
+		if (isEditing) {
+			toast("Não é possível adicionar questões em instrumentos já respondidos.");
+			return;
+		};
 
 		append({
 			type: QuestionTypeEnum.CHOICE,
@@ -37,6 +45,11 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 
 	const handleCloneQuestion = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
+			if (isEditing) {
+				toast("Não é possível adicionar questões em instrumentos já respondidos.");
+				return;
+			};
+
 			// Necessário fazer dessa forma para
 			// pegar as alternativas aninhadas também
 			const question = getValues(`questions.${index}`);
@@ -55,17 +68,22 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 
 	const handleRemoveQuestion = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
+			if (isEditing) {
+				toast("Não é possível remover questões de instrumentos já respondidos");
+				return;
+			};
+
 			// Necessário fazer dessa forma para
 			// pegar as alternativas aninhadas também
-			const question = getValues(`questions.${index}`);
+			// const question = getValues(`questions.${index}`);
 
-			if (question.id) {
-				update(index, {
-					...question,
-					deleted: true,
-				});
-				return;
-			}
+			// if (question.id) {
+			// 	update(index, {
+			// 		...question,
+			// 		deleted: true,
+			// 	});
+			// 	return;
+			// }
 
 			remove(index);
 		};
@@ -128,8 +146,8 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 					</FormControl>
 				</SimpleGrid>
 
-				{fields.filter(field => !field.deleted).map((field, index) => (
-					<Question
+				{fields.map((field, index) => {
+					return <Question
 						key={field._id}
 						field={field}
 						questionIndex={index}
@@ -138,7 +156,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 						handleUpdate={handleUpdateQuestion(index)}
 						handleMoveUp={handleMoveUpQuestion(index)}
 						handleMoveDown={handleMoveDownQuestion(index)} />
-				))}
+				})}
 
 				<FormControl mb='12px' isInvalid={!!errors?.questions}>
 					<Button onClick={handleAddQuestion}>Adicionar questão</Button>

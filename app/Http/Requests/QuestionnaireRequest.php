@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\QuestionTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Arr;
 
 class QuestionnaireRequest extends FormRequest
 {
@@ -29,6 +28,7 @@ class QuestionnaireRequest extends FormRequest
 			'description' => ['required', 'string'],
 			'recurrence' => ['required', 'integer', 'regex:/^[+]?\d+([.]\d+)?$/'],
 			'questions' => ['required', 'array', 'min:1'],
+			'questions.*.id' => ['nullable', 'integer'],
 			'questions.*.description' => ['required', 'string'],
 			'questions.*.type' => ['required', 'integer', Rule::in(QuestionTypeEnum::getValues())],
 			'questions.*.alternatives' => [
@@ -36,6 +36,7 @@ class QuestionnaireRequest extends FormRequest
 				'required_if:questions.*.type,' . QuestionTypeEnum::MULTIPLE_CHOICE->value,
 				'array'
 			],
+			'questions.*.alternatives.*.id' => ['nullable', 'integer'],
             'questions.*.alternatives.*.description' => [
 				'required_if:questions.*.type,' . QuestionTypeEnum::CHOICE->value,
 				'required_if:questions.*.type,' . QuestionTypeEnum::MULTIPLE_CHOICE->value,

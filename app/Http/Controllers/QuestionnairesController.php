@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionnaireRequest;
+use App\Models\AnswersGroup;
 use App\Models\Questionnaire;
 use App\Repositories\QuestionnairesRepository;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class QuestionnairesController extends Controller
@@ -59,8 +62,17 @@ class QuestionnairesController extends Controller
 		if (!$questionnaire) {
 			throw new NotFoundHttpException("Nenhum registro encontrado");
 		}
+
+		$isAnswerd = AnswersGroup::query()
+			->where([
+				'questionnaire_id' => $questionnaire->id,
+			])
+			->limit(1)
+			->get('id');
 	
-		return $questionnaire;
+		return array_merge($questionnaire->toArray(), [
+			'isAnswerd' => $isAnswerd->count() > 0,
+		]);
 	}
 
 	/**
@@ -68,7 +80,18 @@ class QuestionnairesController extends Controller
 	 */
 	public function update(QuestionnaireRequest $request, $id)
 	{
-		$questionnaire = $this->repository->update(intval($id), $request->all());
+		$isAnswerd = AnswersGroup::query()
+			->where([
+				'questionnaire_id' => $id,
+			])
+			->limit(1)
+			->get('id');
+
+		try {
+			$this->repository->update(intval($id), $request->validated(), $isAnswerd->count() > 0);
+		} catch(\Exception $e) {
+			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $e->getMessage());
+		}
 	}
 
 	/**
