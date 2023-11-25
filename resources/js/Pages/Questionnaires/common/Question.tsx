@@ -2,13 +2,13 @@ import { HelpBlockError } from "@/Components/HelpBlockError";
 import { Label } from "@/Components/Label";
 import { TextInput } from "@/Components/TextInput";
 import { QuestionTypeEnum, QuestionTypeEnumDefinitions } from "@/Enums/QuestionTypeEnum";
-import { AddIcon, ArrowDownIcon, ArrowUpIcon, CheckIcon, CopyIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Box, ButtonGroup, Flex, FormControl, IconButton, InputGroup, InputLeftElement, InputRightElement, Menu, MenuButton, MenuItem, MenuList, SimpleGrid, Tooltip, useColorModeValue, useToast } from "@chakra-ui/react";
-import { FieldArrayWithId, useFieldArray, useFormContext } from "react-hook-form";
-import { QuestionnairesPage } from "../types";
 import { ValuesOf } from "@/types";
+import { AddIcon, ArrowDownIcon, ArrowUpIcon, CheckIcon, CopyIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { Box, ButtonGroup, Flex, FormControl, IconButton, InputGroup, InputLeftElement, InputRightElement, Menu, MenuButton, MenuItem, MenuList, SimpleGrid, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { FieldArrayWithId, useFieldArray, useFormContext } from "react-hook-form";
+import { useIsQuestionnaireAnswerd, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
+import { QuestionnairesPage } from "../types";
 import { Alternative } from "./Alternative";
-import { useIsEditingQuestionnaire, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
 
 type QuestionProps = {
 	field: FieldArrayWithId<QuestionnairesPage.TForm, "questions", "_id">;
@@ -27,11 +27,11 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 		name: `questions.${questionIndex}.alternatives`,
 		keyName: "_id",
 	});
-	const isEditing = useIsEditingQuestionnaire();
+	const isAnswerd = useIsQuestionnaireAnswerd();
 	const borderColor = useColorModeValue('secondaryGray.100', 'whiteAlpha.100');
 
 	const handleAddAlternative = (event: React.MouseEvent<HTMLElement>) => {
-		if (isEditing) {
+		if (isAnswerd) {
 			toast("Não é possível adicionar alternativas em instrumentos já respondidos");
 			return;
 		}
@@ -46,7 +46,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 	const handleRemoveAlternative = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
-			if (isEditing) {
+			if (isAnswerd) {
 				toast("Não é possível remover alternativas de instrumentos já respondidos");
 				return
 			};
@@ -69,7 +69,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 	const handleChangeQuestionType = (value: ValuesOf<typeof QuestionTypeEnum>) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
-			if (isEditing) {
+			if (isAnswerd) {
 				toast("Não é possível mudar o tipo de questões em instrumentos já respondidos");
 				return
 			};
@@ -128,7 +128,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 
 						<TextInput {...register(`questions.${questionIndex}.description`)} placeholder="Descrição" p="0 80px 0 45px" />
 
-						<InputRightElement w="80px" gap="4px">
+						{!isAnswerd && <InputRightElement w="80px" gap="4px">
 							<Tooltip label="Clonar pergunta" hasArrow placement="top">
 								<IconButton
 									variant="outline"
@@ -146,7 +146,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 									icon={<DeleteIcon h={3} w={3} />}
 									aria-label="Remover pergunta" />
 							</Tooltip>
-						</InputRightElement>
+						</InputRightElement>}
 					</InputGroup>
 					<HelpBlockError name={`questions.${questionIndex}.description`} errors={errors} />
 				</FormControl>
@@ -161,7 +161,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 							return <Alternative key={field._id} questionIndex={questionIndex} alternativeIndex={index} handleRemove={handleRemoveAlternative(index)} />
 						})}
 
-						<Box px="6px" mb="12px">
+						{!isAnswerd && <Box px="6px" mb="12px">
 							<Tooltip label="Adicionar alternativa" hasArrow placement="top">
 								<IconButton
 									mt="27px"
@@ -170,7 +170,7 @@ export const Question = ({ field, questionIndex, handleClone, handleRemove, hand
 									aria-label="Adicionar alternativa"
 									mr={2} />
 							</Tooltip>
-						</Box>
+						</Box>}
 					</Flex>
 
 					<FormControl isInvalid={!!errors?.questions?.[questionIndex]?.alternatives} mt="-12px" mb="12px">

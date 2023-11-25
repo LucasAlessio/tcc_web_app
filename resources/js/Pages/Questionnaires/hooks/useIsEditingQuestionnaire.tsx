@@ -1,8 +1,8 @@
+import { useToast } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { QuestionnairesPage } from "../types";
-import { useToast } from "@chakra-ui/react";
 
-export const useIsEditingQuestionnaire = (): boolean => {
+export const useIsQuestionnaireAnswerd = (): boolean => {
 	const { formState: { defaultValues } } = useFormContext<QuestionnairesPage.TForm>();
 
 	return Number(defaultValues?.id ?? 0) > 0 && !!defaultValues?.isAnswerd;

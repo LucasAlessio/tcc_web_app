@@ -3,11 +3,11 @@ import { Label } from "@/Components/Label";
 import { TextArea } from "@/Components/TextArea";
 import { TextInput } from "@/Components/TextInput";
 import { QuestionTypeEnum } from "@/Enums/QuestionTypeEnum";
-import { Box, Button, FormControl, Heading, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, SimpleGrid, Text, useColorModeValue } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, FormControl, Heading, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, SimpleGrid, Text, useColorModeValue } from "@chakra-ui/react";
 import { SubmitHandler, useFieldArray, useFormContext } from "react-hook-form";
+import { useIsQuestionnaireAnswerd, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
 import { QuestionnairesPage } from "../types";
 import { Question } from "./Question";
-import { useIsEditingQuestionnaire, useToastQuestionnaireBlocked } from "../hooks/useIsEditingQuestionnaire";
 
 type FormProps = {
 	isSubmitting: boolean
@@ -21,7 +21,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 		name: "questions",
 		keyName: "_id",
 	});
-	const isEditing = useIsEditingQuestionnaire();
+	const isAnswerd = useIsQuestionnaireAnswerd();
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
 
 	const submit = handleSubmit(onSubmit);
@@ -31,7 +31,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 	const handleAddQuestion = () => {
 		clearErrors('questions');
 
-		if (isEditing) {
+		if (isAnswerd) {
 			toast("Não é possível adicionar questões em instrumentos já respondidos.");
 			return;
 		};
@@ -45,7 +45,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 
 	const handleCloneQuestion = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
-			if (isEditing) {
+			if (isAnswerd) {
 				toast("Não é possível adicionar questões em instrumentos já respondidos.");
 				return;
 			};
@@ -54,8 +54,19 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 			// pegar as alternativas aninhadas também
 			const question = getValues(`questions.${index}`);
 
+			if (question.type == QuestionTypeEnum.CHOICE || question.type == QuestionTypeEnum.MULTIPLE_CHOICE) {
+				insert(index + 1, {
+					...question,
+					id: 0,
+					alternatives: question.alternatives.map(v => ({ ...v, id: 0, })),
+				});
+
+				return;
+			}
+
 			insert(index + 1, {
 				...question,
+				id: 0,
 			});
 		};
 	};
@@ -68,7 +79,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 
 	const handleRemoveQuestion = (index: number) => {
 		return (event: React.MouseEvent<HTMLElement>) => {
-			if (isEditing) {
+			if (isAnswerd) {
 				toast("Não é possível remover questões de instrumentos já respondidos");
 				return;
 			};
@@ -115,6 +126,12 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 				<Text size="sm">Insira as informações do questionário.</Text>
 			</SimpleGrid>
 
+			{isAnswerd && <Alert status='info' mt="24px">
+				<AlertIcon />
+				<AlertTitle>Este instrumento já foi respondido</AlertTitle>
+				<AlertDescription>Ações como inclusão ou remoção de perguntas e alternativas foram desabilitadas.</AlertDescription>
+			</Alert>}
+
 			<form onSubmit={submit}>
 				<SimpleGrid columns={{ base: 1, md: 2, xl: 2 }}>
 					<FormControl mt="24px" mb='12px' isInvalid={!!errors.name}>
@@ -158,10 +175,10 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 						handleMoveDown={handleMoveDownQuestion(index)} />
 				})}
 
-				<FormControl mb='12px' isInvalid={!!errors?.questions}>
+				{!isAnswerd && <FormControl mb='12px' isInvalid={!!errors?.questions}>
 					<Button onClick={handleAddQuestion}>Adicionar questão</Button>
 					<HelpBlockError name={`questions`} errors={errors} />
-				</FormControl>
+				</FormControl>}
 
 
 				<Box mt="12px">

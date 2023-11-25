@@ -148,7 +148,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			if (!empty($question["id"]) && array_key_exists($question["id"], $oldQuestions)) {
 				$newQuestion = $oldQuestions[$question["id"]];
 
-				if ($newQuestion->type != $data["type"]) {
+				if ($isAnswerd && $newQuestion->type != $data["type"]) {
 					throw new Exception("Não é possível mudar o tipo de questões em instrumentos já respondidos.");
 				}
 
@@ -168,8 +168,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 			$newQuestionsIds[] = $newQuestion->id;
 
 			if (!in_array($question["type"], [QuestionTypeEnum::CHOICE->value, QuestionTypeEnum::MULTIPLE_CHOICE->value])) {
-				// $newQuestion->alternatives()->delete();
-				// Deletar alternativas caso (old question).type != (new question).type
+				$newQuestion->alternatives()->delete();
 				continue;
 			};
 
@@ -183,7 +182,7 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 				throw new Exception("Não é possível remover questões de instrumentos já respondidos.");
 			}
 
-			//Todo remove alternatives
+			$question->alternatives()->delete();
 			$question->delete();
 		}
 	}

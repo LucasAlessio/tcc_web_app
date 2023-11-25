@@ -5,6 +5,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { Box, FormControl, IconButton, InputGroup, InputRightElement, Tooltip } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { QuestionnairesPage } from "../types";
+import { useIsQuestionnaireAnswerd } from "../hooks/useIsEditingQuestionnaire";
 
 type AlternativeProps = {
 	questionIndex: number;
@@ -15,13 +16,15 @@ type AlternativeProps = {
 export const Alternative = ({ questionIndex, alternativeIndex, handleRemove }: AlternativeProps) => {
 	const { register, formState: { errors } } = useFormContext<QuestionnairesPage.TForm>();
 
+	const isAnswerd = useIsQuestionnaireAnswerd();
+
 	return (
 		<Box width={{ base: "100%", md: "50%", lg: "25%" }} px="6px">
 			<FormControl mb='12px' isInvalid={!!errors?.questions?.[questionIndex]?.alternatives?.[alternativeIndex]}>
 				<Label>Alternativa {alternativeIndex + 1}</Label>
 				<InputGroup>
 					<TextInput {...register(`questions.${questionIndex}.alternatives.${alternativeIndex}.description`)} placeholder="Descrição" />
-					<InputRightElement>
+					{!isAnswerd && <InputRightElement>
 						<Tooltip label="Remover alternativa" hasArrow placement="top">
 							<IconButton
 								variant="outline"
@@ -30,7 +33,7 @@ export const Alternative = ({ questionIndex, alternativeIndex, handleRemove }: A
 								icon={<DeleteIcon h={3} w={3} />}
 								aria-label="Remover pergunta" />
 						</Tooltip>
-					</InputRightElement>
+					</InputRightElement>}
 				</InputGroup>
 				<HelpBlockError name={`questions.${questionIndex}.alternatives.${alternativeIndex}.description`} errors={errors} />
 			</FormControl>
