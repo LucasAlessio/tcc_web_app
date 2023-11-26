@@ -46,7 +46,10 @@ class SaveQuestionnairesToAnswerRequest extends FormRequest
 					return $fail("invalid_value");
 				}
 
-				$questionnaires = $this->repository->getAll($user->id);
+				$user = $this->user();
+				$userId = $user->role != UserRole::ADMIN->value ? $user->id : null;
+
+				$questionnaires = $this->repository->getAll($user->id, $userId);
 				$questionnaires = $questionnaires->toArray();
 
 				$expected = array_map(fn($v) => $v["id"], $questionnaires);

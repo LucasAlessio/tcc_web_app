@@ -7,15 +7,14 @@ use App\Models\Questionnaire;
 use App\Models\User;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
-use stdClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentQuestionnairesControlsRepository implements QuestionnairesControlsRepository {
 
-	public function getAll(int $patientId): object
+	public function getAll(int $patientId, ?int $ownerId = null): object
 	{
-		return Questionnaire::query()
-			->join('users', function(JoinClause $join) {
+		$query = Questionnaire::query()
+			->join('users', function(JoinClause $join) use($ownerId) {
 				$join
 					->on('users.id', '=', 'questionnaires.user_id')
 					->where([
@@ -33,7 +32,13 @@ class EloquentQuestionnairesControlsRepository implements QuestionnairesControls
 				$join
 					->on('patients_questionnaires.questionnaire_id', '=', 'questionnaires.id')
 					->where('patients_questionnaires.user_id', '=', $patientId);
-			})
+			});
+
+		if (!empty($ownerId)) {
+			$query->where('questionnaires.user_id', '=', $ownerId);
+		}
+
+		return $query
 			->orderBy('questionnaires.id', 'ASC')
 			->get([
 				'questionnaires.id',

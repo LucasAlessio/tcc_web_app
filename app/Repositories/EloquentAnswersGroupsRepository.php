@@ -5,27 +5,43 @@ namespace App\Repositories;
 use App\Models\AnswersGroup;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 
-	public function getAll(int $patientId): object
+	public function getAll(int $patientId, ?int $ownerId = null): object
 	{
-		return AnswersGroup::query()
+		$query = AnswersGroup::query()
 			->where([
 				'user_id' => $patientId,
-			])
-			->with("questionnaire")
-			->get();
+			]);
+
+		if (!empty($ownerId)) {
+			$query->whereHas('user.patient' , function(Builder $query) use($ownerId) {
+				$query->where('psychologist_id', '=', $ownerId)->limit(1);
+			});
+		}
+
+		$answersGroups = $query->with("questionnaire")->get();
+		return $answersGroups;
 	}
 
-	public function getById(int $id): ?AnswersGroup
+	public function getById(int $id, ?int $ownerId = null): ?AnswersGroup
 	{
-		return AnswersGroup::query()
+		$query = AnswersGroup::query()
 			->where([
 				'id' => $id,
-			])
-			->with(['questionnaire', 'answers.question', 'answers.alternative'])
-			->first();
+			]);
+
+		if (!empty($ownerId)) {
+			$query->whereHas('user.patient' , function(Builder $query) use($ownerId) {
+				$query->where('psychologist_id', '=', $ownerId)->limit(1);
+			});
+		}
+
+		$answersGroup = $query->with(['questionnaire', 'answers.question', 'answers.alternative'])->first();
+
+		return $answersGroup;
 	}
 
 	public function getToExport(Collection $filters): object {
@@ -57,10 +73,9 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 			->get();
 	}
 
-	public function update(int $id, array $data): AnswersGroup {
-		$answerGroup = AnswersGroup::findOrFail($id);
-		$answerGroup->update($data);
-
-		return $answerGroup;
+	public function update(int $id, array $data): int {
+		return AnswersGroup::query()
+			->where(['id' => $id])
+			->update($data);
 	}
 }

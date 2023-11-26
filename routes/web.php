@@ -43,7 +43,6 @@ Route::group(['middleware' => 'auth'], function() {
 
 		Route::get('/answers-groups/{id}', [AnswersGroupsController::class, 'index'])->name('answers.groups.index');
 		Route::get('/answers-group/{id}', [AnswersGroupsController::class, 'show'])->name('answers.groups.show');
-		Route::patch('/answers-group/{id}', [AnswersGroupsController::class, 'update'])->name('answers.groups.update');
 
 		Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
 		Route::delete('/notifications/{id}', [NotificationsController::class, 'destroy'])->name('notifications.destroy');
@@ -64,6 +63,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::post('/export-answers', [ExportAnswersController::class, 'store'])->name('export.answers.store');
 	Route::get('/export-answers', [ExportAnswersController::class, 'show'])->name('export.answers.show');
+
+	Route::patch('/answers-group/{group}', [AnswersGroupsController::class, 'update'])->name('answers.groups.update');
 });
 
 Route::get('/{path?}', function () {

@@ -12,13 +12,19 @@ use Illuminate\Support\Facades\Hash;
 
 class EloquentPatientsRepository implements PatientsRepository {
 
-	public function getAll(Collection $filters): object
+	public function getAll(Collection $filters, ?int $ownerId = null): object
 	{
 		$query = User::query()
 			->where('role', '=', UserRole::PATIENT->value)
 			->with("patient.psychologist");
 
-		if (!empty($filters->has("search"))) {
+		if (!empty($ownerId)) {
+			$query->whereHas('patient' , function(Builder $query) use($ownerId) {
+				$query->where('psychologist_id', '=', $ownerId)->limit(1);
+			});
+		}
+
+		if (!empty($filters->get("search"))) {
 			$query->where(function(Builder $query) use($filters) {
 				$query
 					->where("name", "like", '%' . (string) $filters->get("search") . '%')
@@ -32,13 +38,20 @@ class EloquentPatientsRepository implements PatientsRepository {
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
-	public function getById(int $id): ?User {
-		$patient = User::where([
-			'role' => UserRole::PATIENT->value,
-			'id' => $id,
-		])
-			->with('patient.psychologist')
-			->first();
+	public function getById(int $id, ?int $ownerId = null): ?User {
+		$query = User::query()
+			->where([
+				'role' => UserRole::PATIENT->value,
+				'id' => $id,
+			]);
+
+		if (!empty($ownerId)) {
+			$query->whereHas('patient' , function(Builder $query) use($ownerId) {
+				$query->where('psychologist_id', '=', $ownerId)->limit(1);
+			});
+		}
+
+		$patient = $query->with('patient.psychologist')->first();
 
 		return $patient;
 	}

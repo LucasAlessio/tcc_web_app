@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
-	public function getAll(Collection $filters, ?int $userId = null): object {
+	public function getAll(Collection $filters, ?int $ownerId = null): object {
 		$query = Questionnaire::query()
 			->with("psychologist");
 
-		if (!empty($userId)) {
-			$query->where("user_id", "=", $userId);
+		if (!empty($ownerId)) {
+			$query->where("user_id", "=", $ownerId);
 		}
 
 		if ($filters->has("search")) {
@@ -30,14 +30,14 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
-	public function getById(int $id, ?int $userId = null): ?Questionnaire {
+	public function getById(int $id, ?int $ownerId = null): ?Questionnaire {
 		$query = Questionnaire::query()
 			->where([
 				'id' => $id,
 			]);
 
-		if (!empty($userId)) {
-			$query->where("user_id", "=", $userId);
+		if (!empty($ownerId)) {
+			$query->where("user_id", "=", $ownerId);
 		}
 
 		$questionnaire = $query->with('questions.alternatives')->first();

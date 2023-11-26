@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SaveQuestionnairesToAnswer;
+use App\Enums\UserRole;
 use App\Http\Requests\SaveQuestionnairesToAnswerRequest;
 use App\Repositories\QuestionnairesControlsRepository;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class QuestionnairesControlsController extends Controller
 {
@@ -16,9 +17,18 @@ class QuestionnairesControlsController extends Controller
 	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit($id)
+	public function edit(Request $request, string $id)
 	{
-		return $this->repository->getAll((int) $id);
+		$user = $request->user();
+		$userId = $user->role != UserRole::ADMIN->value ? $user->id : null;
+	
+		$questionnaires = $this->repository->getAll((int) $id, $userId);
+
+		if (!$questionnaires->count()) {
+			throw new NotFoundHttpException("Nenhum registro encontrado.");
+		}
+
+		return $questionnaires;
 	}
 
 	/**
