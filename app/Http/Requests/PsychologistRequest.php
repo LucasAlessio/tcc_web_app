@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Exceptions\AuthorizationException;
 use App\Models\Psychologist;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,10 +15,11 @@ class PsychologistRequest extends FormRequest
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
-	public function authorize(): bool
+	public function authorize()
 	{
-		if (($this->user()->role ?? "") != UserRole::ADMIN->value) {
-			throw new AuthorizationException();
+		if ($this->user()->role != UserRole::ADMIN->value) {
+			// throw new AuthorizationException();
+			return Response::deny('Você não possui permissão para realizar esta ação.');
 		}
 
 		return true;

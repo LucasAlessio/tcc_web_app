@@ -1,12 +1,15 @@
+import { useIsAdmin } from '@/Contexts/Auth2';
 import { As, Box, Flex, HStack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import { MdHome, MdOutlinePeopleOutline, MdOutlinePsychology, MdOutlineQuestionAnswer } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 
 export const SidebarLinks = ({ onClose }: { onClose?: () => void }) => {
+	const isAdmin = useIsAdmin();
+
 	return (
 		<>
 			<SidebarLink name="Início" path='/' icon={MdHome} onClick={onClose} />
-			<SidebarLink name="Psicólogos" path='/psicologos' icon={MdOutlinePsychology} onClick={onClose} />
+			{isAdmin && <SidebarLink name="Psicólogos" path='/psicologos' icon={MdOutlinePsychology} onClick={onClose} />}
 			<SidebarLink name="Pacientes" path='/pacientes' icon={MdOutlinePeopleOutline} onClick={onClose} />
 			<SidebarLink name="Questionários" path='/questionarios' icon={MdOutlineQuestionAnswer} onClick={onClose} />
 		</>

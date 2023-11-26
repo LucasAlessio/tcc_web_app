@@ -97,7 +97,7 @@ class QuestionnairesController extends Controller
 		$this->authorize('destroy', $questionnaire);
 
 		if (!$this->repository->delete((int) $questionnaire->id)) {
-			throw new NotFoundHttpException("Não foi possível excluir o registro.");
+			throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, "Não foi possível excluir o registro.");
 		}
 	}
 }

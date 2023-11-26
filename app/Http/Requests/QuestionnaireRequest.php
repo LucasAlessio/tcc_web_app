@@ -16,6 +16,7 @@ class QuestionnaireRequest extends FormRequest
 	public function authorize()
 	{
 		if ($this->isMethod('post') && $this->user()->role != UserRole::PSYCHOLOGIST->value) {
+			// throw new AuthorizationException();
 			return Response::deny('Você não possui permissão para realizar esta ação.');
 		}
 

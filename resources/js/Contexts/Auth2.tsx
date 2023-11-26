@@ -138,3 +138,9 @@ export const useIsPsychologist = () => {
 
 	return authenticated && user.role == UserRoleEnum.PSYCHOLOGIST;
 }
+
+export const useIsAdmin = () => {
+	const { authenticated, user } = useAuth2();
+
+	return authenticated && user.role == UserRoleEnum.ADMIN;
+}
