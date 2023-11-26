@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface QuestionnairesRepository {
 
-	public function getAll(Collection $filters): object;
+	public function getAll(Collection $filters, ?int $userId = null): object;
 
-	public function getById(int $id): ?Questionnaire;
+	public function getById(int $id, ?int $userId = null): ?Questionnaire;
 
 	public function create(array $data): Questionnaire;
 

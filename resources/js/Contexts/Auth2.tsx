@@ -1,3 +1,4 @@
+import { UserRoleEnum } from "@/Enums/UserRoleEnum";
 import { useLogin } from "@/Pages/Auth/hooks/useLogin";
 import { useLogout } from "@/Pages/Auth/hooks/useLogout";
 import { useExcluirConta } from "@/Pages/Profile/hooks/useExcluirConta";
@@ -131,3 +132,9 @@ export const Auth2Provider = ({ children }: PropsWithChildren<{}>) => {
 }
 
 export const useAuth2 = () => useContext<ContextData>(Context);
+
+export const useIsPsychologist = () => {
+	const { authenticated, user } = useAuth2();
+
+	return authenticated && user.role == UserRoleEnum.PSYCHOLOGIST;
+}

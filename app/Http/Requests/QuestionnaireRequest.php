@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\QuestionTypeEnum;
+use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Validation\Rule;
 
 class QuestionnaireRequest extends FormRequest
@@ -11,8 +13,12 @@ class QuestionnaireRequest extends FormRequest
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
-	public function authorize(): bool
+	public function authorize()
 	{
+		if ($this->isMethod('post') && $this->user()->role != UserRole::PSYCHOLOGIST->value) {
+			return Response::deny('Você não possui permissão para realizar esta ação.');
+		}
+
 		return true;
 	}
 

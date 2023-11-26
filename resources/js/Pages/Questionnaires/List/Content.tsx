@@ -8,8 +8,12 @@ import { Pagination } from "../../../Components/Pagination";
 import { defaultFilters } from "../ProviderPage";
 import { useQuestionnairesFilters } from "../hooks/useQuestionnairesFilters";
 import { TableContent } from "./TableContent";
+import { useAuth2, useIsPsychologist } from "@/Contexts/Auth2";
+import { UserRoleEnum } from "@/Enums/UserRoleEnum";
 
 export const Content = () => {
+	const isPsychologist = useIsPsychologist();
+
 	const { form: { register, setValue }, filters, applyFilters } = useQuestionnairesFilters();
 
 	const navigate = useNavigate();
@@ -32,8 +36,8 @@ export const Content = () => {
 					<ResetFiltersPsychologistsButton />
 				</FilterContent>
 
-				<Button variant="brand" onClick={() => navigate("/questionarios/adicionar")} leftIcon={<AddIcon />}>Cadastrar questionário</Button>
-			</Flex>
+				{isPsychologist && <Button variant="brand" onClick={() => navigate("/questionarios/adicionar")} leftIcon={<AddIcon />}>Cadastrar questionário</Button>}
+			</Flex >
 
 			<Card>
 				<TableContent />

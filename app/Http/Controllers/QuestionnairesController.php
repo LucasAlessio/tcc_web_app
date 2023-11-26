@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\QuestionnaireRequest;
 use App\Models\AnswersGroup;
 use App\Models\Questionnaire;
@@ -23,15 +24,10 @@ class QuestionnairesController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		return $this->repository->getAll(collect($request->all()));
-	}
+		$user = $request->user();
+		$userId = $user->role != UserRole::ADMIN->value ? $user->id : null;
 
-	/**
-	 * Show the form for creating a new resource.
-	 */
-	public function create()
-	{
-		//
+		return $this->repository->getAll(collect($request->all()), $userId);
 	}
 
 	/**
@@ -39,28 +35,25 @@ class QuestionnairesController extends Controller
 	 */
 	public function store(QuestionnaireRequest $request)
 	{
+		$this->authorize('store', Questionnaire::class);
+
 		return $this->repository->create(array_merge($request->all(), [
 			"user_id" => $request->user()->id,
 		]));
 	}
 
 	/**
-	 * Display the specified resource.
-	 */
-	public function show(Questionnaire $questionnaire)
-	{
-		//
-	}
-
-	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit($id)
+	public function edit(Request $request, string $id)
 	{
-		$questionnaire = $this->repository->getById((int) $id);
+		$user = $request->user();
+		$userId = $user->role != UserRole::ADMIN->value ? $user->id : null;
+
+		$questionnaire = $this->repository->getById((int) $id, $userId);
 
 		if (!$questionnaire) {
-			throw new NotFoundHttpException("Nenhum registro encontrado");
+			throw new NotFoundHttpException("Nenhum registro encontrado.");
 		}
 
 		$isAnswerd = AnswersGroup::query()
@@ -78,17 +71,19 @@ class QuestionnairesController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(QuestionnaireRequest $request, $id)
+	public function update(QuestionnaireRequest $request, Questionnaire $questionnaire)
 	{
+		$this->authorize('update', $questionnaire);
+
 		$isAnswerd = AnswersGroup::query()
 			->where([
-				'questionnaire_id' => $id,
+				'questionnaire_id' => $questionnaire->id,
 			])
 			->limit(1)
 			->get('id');
 
 		try {
-			$this->repository->update(intval($id), $request->validated(), $isAnswerd->count() > 0);
+			$this->repository->update((int) $questionnaire->id, $request->validated(), $isAnswerd->count() > 0);
 		} catch(\Exception $e) {
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, $e->getMessage());
 		}
@@ -97,10 +92,12 @@ class QuestionnairesController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy($id)
+	public function destroy(Questionnaire $questionnaire)
 	{
-		if (!$this->repository->delete((int) $id)) {
-			throw new NotFoundHttpException("Nenhum registro encontrado");
+		$this->authorize('destroy', $questionnaire);
+
+		if (!$this->repository->delete((int) $questionnaire->id)) {
+			throw new NotFoundHttpException("Não foi possível excluir o registro.");
 		}
 	}
 }

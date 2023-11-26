@@ -5,8 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Throwable;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -33,6 +33,10 @@ class Handler extends ExceptionHandler
 		$this->renderable(function (Throwable $e) {
 			if ($e instanceof ValidationException) {
 				// return response()->json($e->errors(), $e->status);
+			}
+
+			if ($e->getPrevious() instanceof ModelNotFoundException) {
+				throw new NotFoundHttpException('[404] Registro não encontrado.');
 			}
 		});
 	}

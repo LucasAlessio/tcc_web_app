@@ -57,8 +57,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::delete('/psychologists/{id}', [PsychologistsController::class, 'destroy'])->name('psychologists.destroy');
 
 	Route::post('/questionnaires', [QuestionnairesController::class, 'store'])->name('questionnaires.store');
-	Route::put('/questionnaires/{id}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
-	Route::delete('/questionnaires/{id}', [QuestionnairesController::class, 'destroy'])->name('questionnaires.destroy');
+	Route::put('/questionnaires/{questionnaire}', [QuestionnairesController::class, 'update'])->name('questionnaires.update');
+	Route::delete('/questionnaires/{questionnaire}', [QuestionnairesController::class, 'destroy'])->name('questionnaires.destroy');
 
 	Route::post('/questionnaires-controls/{id}', [QuestionnairesControlsController::class, 'update'])->name('questionnaires.controls.update');
 

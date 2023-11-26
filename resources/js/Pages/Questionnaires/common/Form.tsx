@@ -126,7 +126,7 @@ export const Form = ({ isSubmitting, onSubmit }: FormProps) => {
 				<Text size="sm">Insira as informações do questionário.</Text>
 			</SimpleGrid>
 
-			{isAnswerd && <Alert status='info' mt="24px">
+			{isAnswerd && <Alert status='warning' mt="24px">
 				<AlertIcon />
 				<AlertTitle>Este instrumento já foi respondido</AlertTitle>
 				<AlertDescription>Ações como inclusão ou remoção de perguntas e alternativas foram desabilitadas.</AlertDescription>

@@ -12,13 +12,16 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 
-	public function getAll(Collection $filters): object {
+	public function getAll(Collection $filters, ?int $userId = null): object {
 		$query = Questionnaire::query()
 			->with("psychologist");
+
+		if (!empty($userId)) {
+			$query->where("user_id", "=", $userId);
+		}
 
 		if ($filters->has("search")) {
 			$query->where("name", "like", '%' . (string) $filters->get("search") . '%');
@@ -27,12 +30,17 @@ class EloquentQuestionnairesRepository implements QuestionnairesRepository {
 		return $query->paginate(((int) $filters->get("limit")) ?: SystemConfigEnum::PAGE_LIMIT_DEFAULT->value);
 	}
 
-	public function getById(int $id): ?Questionnaire {
-		$questionnaire = Questionnaire::where([
-			'id' => $id,
-		])
-			->with('questions.alternatives')
-			->first();
+	public function getById(int $id, ?int $userId = null): ?Questionnaire {
+		$query = Questionnaire::query()
+			->where([
+				'id' => $id,
+			]);
+
+		if (!empty($userId)) {
+			$query->where("user_id", "=", $userId);
+		}
+
+		$questionnaire = $query->with('questions.alternatives')->first();
 
 		return $questionnaire;
 	}
