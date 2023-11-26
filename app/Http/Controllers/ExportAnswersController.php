@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\FilterAnswersRequest;
 use App\Repositories\AnswersGroupsRepository;
 use Illuminate\Http\Request;
@@ -20,7 +21,10 @@ class ExportAnswersController extends Controller
 	 */
 	public function store(FilterAnswersRequest $request)
 	{
-		$groups = $this->repository->getToExport(collect($request->validated()));
+		$user = $request->user();
+		$userId = $user->role != UserRole::ADMIN->value ? $user->id : null;
+
+		$groups = $this->repository->getToExport(collect($request->validated()), $userId);
 
 		if (!$groups->count()) {
 			return response(null, Response::HTTP_NO_CONTENT);

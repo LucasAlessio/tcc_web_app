@@ -44,7 +44,7 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 		return $answersGroup;
 	}
 
-	public function getToExport(Collection $filters): object {
+	public function getToExport(Collection $filters, ?int $ownerId = null): object {
 		DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY', ''));");
 		
 		$subquery = AnswersGroup::query()
@@ -63,14 +63,21 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 			$subquery->whereRaw("DATE(created_at) <= ?", [$filters->get("endDate")]);
 		}
 
-		return AnswersGroup::query()
+		$query = AnswersGroup::query()
 			->whereIn("id", $subquery)
 			->with(array_filter([
 				((bool) $filters->get('withPatientsData', false) ? "user.patient" : ""),
 				"answers.question",
 				"answers.alternative"
-			]))
-			->get();
+			]));
+
+		if (!empty($ownerId)) {
+			$query->whereHas('questionnaire' , function(Builder $query) use($ownerId) {
+				$query->where('user_id', '=', $ownerId)->limit(1);
+			});
+		}
+
+		return $query->get();
 	}
 
 	public function update(int $id, array $data): int {
