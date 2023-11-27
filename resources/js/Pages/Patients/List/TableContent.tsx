@@ -12,76 +12,78 @@ export const TableContent = () => {
 	const { form: { setValue }, filters } = usePatientsFilters();
 	const { data, isFetching, isSuccess, isError, error } = useGetPatients();
 
-	if (isError) {
-		return error?.message;
-	}
-
 	return (
 		<>
 			<Card>
-				<TableContainer overflowX="auto" whiteSpace="nowrap">
-					<Table>
-						<Thead>
-							<Tr>
-								<Th>Nome</Th>
-								<Th>E-mail</Th>
-								<Th>Psicólogo</Th>
-								<Th>Criado em</Th>
-								<Th w="120px">Ações</Th>
-							</Tr>
-						</Thead>
+				{(() => {
+					if (isError) {
+						return error?.message;
+					}
 
-						<Tbody>
-							{(() => {
-								if (isFetching) {
-									return (
-										<Tr>
-											<Td colSpan={4} textAlign="center">
-												<IndeterminatedCircularProgress />
-											</Td>
-										</Tr>
-									);
-								}
+					return <TableContainer overflowX="auto" whiteSpace="nowrap">
+						<Table>
+							<Thead>
+								<Tr>
+									<Th>Nome</Th>
+									<Th>E-mail</Th>
+									<Th>Psicólogo</Th>
+									<Th>Criado em</Th>
+									<Th w="120px">Ações</Th>
+								</Tr>
+							</Thead>
 
-								if (!isSuccess) {
-									return <></>;
-								}
+							<Tbody>
+								{(() => {
+									if (isFetching) {
+										return (
+											<Tr>
+												<Td colSpan={4} textAlign="center">
+													<IndeterminatedCircularProgress />
+												</Td>
+											</Tr>
+										);
+									}
 
-								if (data.total === 0) {
-									return (
-										<Tr>
-											<Td colSpan={5} textAlign="center">
-												<Text colorScheme="gray" fontStyle="italic">Nenhum registro foi encontrado</Text>
-											</Td>
-										</Tr>
-									);
-								}
+									if (!isSuccess) {
+										return <></>;
+									}
 
-								return <>
-									{data.data.map((value) => (
-										<Tr key={value.id}>
-											<Td>{value.name}</Td>
-											<Td>{value.email}</Td>
-											<Td>{value?.patient?.psychologist.name}</Td>
-											<Td>{date2br(value.created_at)}</Td>
-											<Td w="120px">
-												<Tooltip label="Visualizar" hasArrow placement="top">
-													<IconButton
-														as={Link}
-														to={`/pacientes/visualizar/${value.id}`}
-														type="submit"
-														size='sm'
-														icon={<ViewIcon h={3} w={3} />}
-														aria-label="Editar" />
-												</Tooltip>
-											</Td>
-										</Tr>
-									))}
-								</>;
-							})()}
-						</Tbody>
-					</Table>
-				</TableContainer>
+									if (data.total === 0) {
+										return (
+											<Tr>
+												<Td colSpan={5} textAlign="center">
+													<Text colorScheme="gray" fontStyle="italic">Nenhum registro foi encontrado</Text>
+												</Td>
+											</Tr>
+										);
+									}
+
+									return <>
+										{data.data.map((value) => (
+											<Tr key={value.id}>
+												<Td>{value.name}</Td>
+												<Td>{value.email}</Td>
+												<Td>{value?.patient?.psychologist.name}</Td>
+												<Td>{date2br(value.created_at)}</Td>
+												<Td w="120px">
+													<Tooltip label="Visualizar" hasArrow placement="top">
+														<IconButton
+															as={Link}
+															to={`/pacientes/visualizar/${value.id}`}
+															type="submit"
+															size='sm'
+															icon={<ViewIcon h={3} w={3} />}
+															aria-label="Editar" />
+													</Tooltip>
+												</Td>
+											</Tr>
+										))}
+									</>;
+								})()}
+							</Tbody>
+						</Table>
+					</TableContainer>
+				})()}
 			</Card>
 
 			<Pagination
@@ -89,7 +91,7 @@ export const TableContent = () => {
 				page={filters.page}
 				setPage={(page) => setValue("page", page, true)}
 				setPageSize={(size) => setValue("limit", size, true)}
-				total={1} />
+				total={data?.total || 1} />
 		</>
 	);
 };
