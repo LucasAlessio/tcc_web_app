@@ -48,12 +48,12 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 		DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY', ''));");
 		
 		$subquery = AnswersGroup::query()
-			->select(["id"])
+			->selectRaw("GROUP_CONCAT(`id` SEPARATOR ',') AS ids")
 			->where([
 				"questionnaire_id" => $filters->get("id", -1),
 			])
 			->groupBy(["user_id"])
-			->havingRaw("count(`user_id`) >= ?", [$filters->get("responsesQuantity", 1)]);
+			->havingRaw("COUNT(`user_id`) = ?", [$filters->get("responsesQuantity", 1)]);
 
 		if (!empty($filters->get("startDate"))) {
 			$subquery->whereRaw("DATE(created_at) >= ?", [$filters->get("startDate")]);
@@ -63,8 +63,14 @@ class EloquentAnswersGroupsRepository implements AnswersGroupsRepository {
 			$subquery->whereRaw("DATE(created_at) <= ?", [$filters->get("endDate")]);
 		}
 
+		if (!$subquery->count()) {
+			return $subquery;
+		}
+
+		$ids = explode(',', $subquery->first()->ids);
+
 		$query = AnswersGroup::query()
-			->whereIn("id", $subquery)
+			->whereIn("id", $ids)
 			->with(array_filter([
 				((bool) $filters->get('withPatientsData', false) ? "user.patient" : ""),
 				"answers.question",
