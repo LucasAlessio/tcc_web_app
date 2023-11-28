@@ -1,6 +1,6 @@
 import { useEffect, FormEventHandler } from 'react';
 import Checkbox from '@/Components/Checkbox';
-import GuestLayout from '@/Layouts/GuestLayout';
+// import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -27,7 +27,8 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 	};
 
 	return (
-		<GuestLayout>
+		<>
+			{/* <GuestLayout> */}
 			<Head title="Log in" />
 
 			{status?.success && <div className="mb-4 font-medium text-sm text-green-600">{status?.success}</div>}
@@ -93,6 +94,7 @@ export default function Login({ status, canResetPassword }: { status?: { error?:
 					</PrimaryButton>
 				</div>
 			</form>
-		</GuestLayout>
+			{/* </GuestLayout > */}
+		</>
 	);
 }
