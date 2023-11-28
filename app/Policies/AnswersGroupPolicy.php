@@ -15,7 +15,7 @@ class AnswersGroupPolicy
 	public function __construct() { }
 
 	public function update(User $user, AnswersGroup $group) {
-		return $user->role == UserRole::ADMIN->value || $user->id === $group->questionnaire()->first()?->id_user
+		return $user->role == UserRole::ADMIN->value || $user->id === $group->questionnaire->user_id
 			? Response::allow()
 			: Response::deny('Você não possui permissão para realizar esta ação.');
 	}
